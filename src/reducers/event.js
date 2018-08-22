@@ -15,12 +15,22 @@ export default function event(state = initialState.event, action) {
           data: {
             cities: action.value.cities,
             services: action.value.services,
-            snacks:action.value.snacks,
+            snacks: action.value.snacks,
             meals: action.value.meals,
             themes: action.value.themes
           }
         }
       });
+    case types.GET_EVENT_SESSION:
+      return mergeDeep({}, state, {
+        userinfo: action.value
+      });
+    case types.GET_PARTY_DETAILS:
+      return mergeDeep({}, state, {
+        partydetails: action.value
+      });
+
+
     default:
       return state;
   }

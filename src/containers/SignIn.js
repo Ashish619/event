@@ -2,8 +2,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
 import PropTypes from "prop-types";
+import * as actions from "actions/events";
 
 import {
   Container, Row, Col, Collapse,
@@ -19,19 +20,39 @@ import {
 class SignIn extends Component {
   constructor(props) {
     super(props);
-    this.toggle = this.toggle.bind(this);
+
     this.state = {
       isOpen: false
     };
+
+    this.username = null;
+    this.password = null;
   }
 
-  toggle() {
+  componentWillMount = () => {
+    if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
+      window.location.pathname = '/MyParty';
+    }
+  }
+
+  componentDidUpdate = () => {
+    if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
+      window.location.pathname = '/MyParty';
+    }
+  }
+
+  toggle = () => {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
 
+  initiateLogin = () => {
+    this.props.actions.fetchUserDetails(this.username.value, this.password.value);
+  }
+
   render() {
+
     return (
       <Container fluid={true} className='landing'>
         <Navbar expand='md'>
@@ -72,8 +93,10 @@ class SignIn extends Component {
                 <p className='heading'>Login</p>
                 <div className='form-content'>
                   <form>
-                    <input type='text' placeholder='username' className='text-bodered' />
-                    <input type='password' placeholder='password' className='text-bodered' />
+                    <input ref={el => { this.username = el; }}
+                      type='text' placeholder='username' className='text-bodered' />
+                    <input ref={el => { this.password = el; }}
+                      type='password' placeholder='password' className='text-bodered' />
                     <div className='rem-blk'>
                       <label className='control control--checkbox'>
                         Remember Me
@@ -82,10 +105,10 @@ class SignIn extends Component {
                       </label>
                     </div>
                     <div className='btn-blk'>
-                      <Button>Login</Button>
+                      <Button onClick={this.initiateLogin}>Login</Button>
                       <a href='/bookParty' className='btn' >Continue As Guest</a>
                     </div>
-                    <p className='singup-links' >Not a Member?  <a href=''>Sign Up</a>
+                    <p className='singup-links' >Not a Member?  <a href='/bookParty'>Sign Up</a>
                       <br /> <a href=''> Forget password?</a>
                     </p>
                   </form>
@@ -102,11 +125,14 @@ class SignIn extends Component {
 }
 
 SignIn.propTypes = {
-  match: PropTypes.object
+  match: PropTypes.object,
+  actions: PropTypes.object,
+  userinfo: PropTypes.object
 };
 
 function mapStateToProps(state) {
   return {
+    userinfo: state.event.userinfo
   };
 }
 
@@ -114,6 +140,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators(
       {
+        fetchUserDetails: actions.fetchUserDetails
       },
       dispatch
     )

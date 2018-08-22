@@ -2,7 +2,8 @@
 import * as types from "./types";
 import Promise from 'promise-polyfill';
 import {
-
+    getPartyDetails,
+    login,
     getCities,
     getServices,
     getSnacks,
@@ -17,6 +18,49 @@ export function resetEmployee() {
         });
     };
 }
+const headers = () => ({
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    'api-key': '2956fc5c-a8bc-41d1-acd3-03f4f36e537a',
+    'mode': 'cors'
+});
+
+export function fetchPartyDetails(email, sessiontoken) {
+    return function (dispatch) {
+        const partyUrl = getPartyDetails(email);
+        fetch(partyUrl, {
+            method: 'GET',
+            headers: { ...headers(), sessiontoken },
+        }).then(function (response) {
+            return response.json();
+        }).then(response => {
+            dispatch({
+                type: types.GET_PARTY_DETAILS,
+                value: response
+            });
+        }).catch(error => { console.log(error); });
+    };
+}
+
+
+export function fetchUserDetails(username, password) {
+    return function (dispatch) {
+        const loginUrl = login();
+        fetch(loginUrl, {
+            method: 'POST',
+            headers: headers(),
+            body: JSON.stringify({ username, password })
+        }).then(function (response) {
+            return response.json();
+        }).then(response => {
+            dispatch({
+                type: types.GET_EVENT_SESSION,
+                value: response
+            });
+        }).catch(error => { console.log(error); });
+    };
+}
+
 
 export function fetchEventDetails() {
     const urlCities = getCities();
@@ -24,12 +68,7 @@ export function fetchEventDetails() {
     const urlSnacks = getSnacks();
     const urlMeals = getMeals();
     const urlThemes = getThemes();
-    const headers = () => ({
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'api-key': '2956fc5c-a8bc-41d1-acd3-03f4f36e537a',
-        'mode': 'cors'
-    });
+
     return function (dispatch) {
         Promise.all([
             fetch(urlCities, {

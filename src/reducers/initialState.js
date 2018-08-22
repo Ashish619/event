@@ -1,6 +1,8 @@
 
 export default {
   event: {
+    userinfo: {},
+    partydetails:{},
     catalogue: {
       loaded: false,
       data: {

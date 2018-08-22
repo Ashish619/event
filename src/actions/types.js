@@ -1,4 +1,6 @@
-// employee actions
+
 
 export const RESET_EVENT_DETAILS = 'RESET_EVENT_DETAILS';
 export const GET_EVENT_DETAILS = 'GET_EVENT_DETAILS';
+export const GET_EVENT_SESSION = 'GET_EVENT_SESSION';
+export const GET_PARTY_DETAILS = 'GET_PARTY_DETAILS';

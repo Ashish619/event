@@ -24,3 +24,11 @@ export const getThemes = () => {
   return `${baseUrl}/themes`;
 };
 
+
+export const login = () => {
+  return `${baseUrl}/login`;
+};
+
+export const getPartyDetails = (email) => {
+  return `${baseUrl}/user/${email}/party`;
+};

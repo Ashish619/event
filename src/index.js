@@ -18,6 +18,7 @@ import Event from "containers/Event";
 import SignIn from "containers/SignIn";
 import PartyDetails from "containers/PartyDetails";
 import vendorDetails from "containers/vendorDetails";
+import MyParty from "containers/MyParty";
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -36,6 +37,7 @@ app && ReactDOM.render(
                     <Route path='/SignIn' component={SignIn} />
                     <Route path='/bookParty' component={PartyDetails} />
                     <Route path='/businessPartner' component={vendorDetails} />
+                    <Route path='/MyParty' component={MyParty} />
                 </Switch>
             </ConnectedRouter>
         </PersistGate>
