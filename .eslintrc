@@ -1,0 +1,59 @@
+{
+    "env": {
+        "es6": true,
+        "browser" : true,
+        "node": true,
+        "jest": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "arrowFunctions": true
+        }
+    },
+    "settings":{
+    },
+    "plugins": [
+        "react"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
+    "rules": {
+        "semi"                                   : ["error", "always"],
+        "no-control-regex"                       : 1,
+        "no-invalid-regexp"                      : 0,
+        "wrap-regex"                             : 0,
+        "key-spacing"                            : 0,
+        "no-useless-escape"                      : 1,
+        "jsx-quotes"                             : [2, "prefer-single"],
+        "max-len"                                : [2, 120, 2, { "ignoreRegExpLiterals": true }],
+        "object-curly-spacing"                   : [2, "always"],
+        "space-before-function-paren"            : 0,
+        "global-require"                         : 0,
+        "comma-dangle"                           : 0,
+        "no-underscore-dangle"                   : 0,
+        "react/jsx-uses-vars"                    : [2],
+        "react/jsx-uses-react"                   : [2],
+        "class-methods-use-this"                 : 0,
+        "import/extensions"                      : 0,
+        "import/no-unresolved"                   : 0,
+        "import/no-extraneous-dependencies"      : 0,
+        "jsx-a11y/accessible-emoji"              : 0,
+        "jsx-a11y/click-events-have-key-events"  : 0,
+        "jsx-a11y/onclick-has-role"              : 0,
+        "jsx-a11y/no-static-element-interactions": 0,
+        "react/no-typos"                         : 1,
+        "react/jsx-key"                          : 0,
+        "react/jsx-no-bind"                      : 0,
+        "react/jsx-no-undef"                     : 1,
+        "react/prop-types"                       : 1,
+        "react/self-closing-comp"                : 1,
+        "react/jsx-closing-tag-location"         : 1,
+        "react/jsx-tag-spacing"                  : 1,
+        "no-console"                             : 0,
+        "no-unused-vars"                         : 0
+    }
+}

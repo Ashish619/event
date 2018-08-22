@@ -1,0 +1,45 @@
+.stepper {
+    display: inline-block;
+    width: 75px;
+    background: #f4f4f4;
+    border: 1px solid #000;
+    color: #5148ff;
+    height: 35px;
+    padding: 5px;
+    >* {
+        display: inline-block;
+    }
+    input {
+        background: transparent;
+        outline: none;
+        border: none;
+        width: 22px;
+        text-align: center;
+    }
+    .placeholder {
+        background: transparent;
+        padding-left: 5px;
+        float: left;
+    }
+    .inc {
+        float: right;
+    }
+    .dec {
+        float: left;
+    }
+    .inc,
+    .dec {
+        color: #5148ff;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        line-height: 1;
+        width: 20px;
+    }
+    &:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+}

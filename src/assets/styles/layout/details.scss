@@ -1,0 +1,107 @@
+.details {
+    padding: 0;
+    .input-text {
+        display: block;
+        width: 100%;
+    }
+    .details-content {
+        padding: 50px 55px 15px 55px;
+        .row>div>input,
+        .row>div>div {
+            margin-bottom: 40px
+        }
+    }
+    .service-details {
+        padding: 25px 55px 0px 55px;
+        &.vendor {
+            .control{
+                margin-bottom: 5px;
+            }
+            ::-webkit-input-placeholder {
+                /* Chrome/Opera/Safari */
+                color: #7d76ff;
+            }
+            ::-moz-placeholder {
+                /* Firefox 19+ */
+                color: #7d76ff;
+            }
+            :-ms-input-placeholder {
+                /* IE 10+ */
+                color: #7d76ff;
+            }
+            :-moz-placeholder {
+                /* Firefox 18- */
+                color: #7d76ff;
+            }
+            .text-charges {
+                text-align: left;
+                margin-left: 30px;
+                width: calc(100% - 30px);
+            }
+        }
+        .row {
+            &>div {
+                margin-bottom: 50px;
+                font-weight: bold;
+            }
+        }
+    }
+    .snackveg-details {
+        padding: 25px 55px 0px 55px;
+        .item-list {
+            .stepperCont {
+                float: right;
+                position: relative;
+                padding-bottom: 15px;
+                height: 55px;
+                &.vendor {
+                    height: auto;
+                    ::-webkit-input-placeholder {
+                        /* Chrome/Opera/Safari */
+                        color: #7d76ff;
+                    }
+                    ::-moz-placeholder {
+                        /* Firefox 19+ */
+                        color: #7d76ff;
+                    }
+                    :-ms-input-placeholder {
+                        /* IE 10+ */
+                        color: #7d76ff;
+                    }
+                    :-moz-placeholder {
+                        /* Firefox 18- */
+                        color: #7d76ff;
+                    }
+                }
+            }
+            .cust-text {
+                font-size: 12px;
+                position: absolute;
+                bottom: 0;
+            }
+            .ctrl {
+                margin: 15px 0 20px 0;
+                overflow: hidden;
+                label {
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+            }
+            img {
+                width: 100%;
+                height: 155px;
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+            &:after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+        }
+    }
+    .next-blk {
+        text-align: center;
+        margin: 0 0 50px 0;
+    }
+}
