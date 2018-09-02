@@ -56,6 +56,9 @@ class Event extends Component {
                   <NavLink href='/signIn' >Sign in</NavLink>
                 </NavItem>
                 <NavItem>
+                  <NavLink href='/signUp' >Sign Up</NavLink>
+                </NavItem>
+                <NavItem>
                   <NavLink className='bodered-nav'>Get In Touch</NavLink>
                 </NavItem>
               </Nav>

@@ -8,7 +8,8 @@ import {
     getServices,
     getSnacks,
     getMeals,
-    getThemes
+    getThemes,
+    registerVendor
 } from "config/api";
 
 export function resetEmployee() {
@@ -43,6 +44,20 @@ export function fetchPartyDetails(email, sessiontoken) {
 }
 
 
+export function registerVendorDetails(vendorinfo) {
+    const loginUrl = registerVendor();
+    return fetch(loginUrl, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(vendorinfo)
+    }).then(function (response) {
+        return response.json();
+
+    }).catch(error => { console.log(error); });
+
+}
+
+
 export function fetchUserDetails(username, password) {
     return function (dispatch) {
         const loginUrl = login();
@@ -60,6 +75,8 @@ export function fetchUserDetails(username, password) {
         }).catch(error => { console.log(error); });
     };
 }
+
+
 
 
 export function fetchEventDetails() {

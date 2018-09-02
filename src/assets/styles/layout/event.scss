@@ -449,6 +449,19 @@ p {
                 .singup-links {
                     text-align: center
                 }
+                .rem-blk.signup {
+                    label {
+                        font-size: 18px;
+                        &:nth-child(1) {
+                            margin-right: 20px;
+                        }
+                    }
+                    &~.btn-blk {
+                        button {
+                            margin: 0 auto;
+                        }
+                    }
+                }
                 .btn-blk {
                     margin-bottom: 25px;
                     &>.btn:nth-child(1) {

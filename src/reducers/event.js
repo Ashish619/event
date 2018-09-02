@@ -11,13 +11,14 @@ export default function event(state = initialState.event, action) {
     case types.GET_EVENT_DETAILS:
       return mergeDeep({}, state, {
         catalogue: {
-          loaded: true,
+      
           data: {
             cities: action.value.cities,
             services: action.value.services,
             snacks: action.value.snacks,
             meals: action.value.meals,
-            themes: action.value.themes
+            themes: action.value.themes,
+            loaded: true
           }
         }
       });

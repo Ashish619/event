@@ -1,7 +1,7 @@
 
 
 
-const baseUrl = 'http://139.59.19.234/api/v1';
+const baseUrl = 'http://api.wahparty.com/v1';
 
 // API Endpoints
 export const getCities = () => {
@@ -32,3 +32,9 @@ export const login = () => {
 export const getPartyDetails = (email) => {
   return `${baseUrl}/user/${email}/party`;
 };
+
+export const registerVendor = () => {
+  return `${baseUrl}/vendors`;
+};
+
+

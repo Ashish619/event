@@ -29,15 +29,15 @@ class MyParty extends Component {
     }
 
     componentWillMount = () => {
-        if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
-            window.location.pathname = '/SignIn';
-        }
+        /*  if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
+              window.location.pathname = '/SignIn';
+          }*/
     }
 
     componentDidUpdate = () => {
-        if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
-            window.location.pathname = '/SignIn';
-        }
+        /* if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
+             window.location.pathname = '/SignIn';
+         }*/
     }
 
     componentDidMount = () => {
@@ -70,62 +70,61 @@ class MyParty extends Component {
         };
 
         return (
-            this.props.loaded ?
-                <Container fluid={true} className='details' >
-                    <p className='header-title'>Party Details</p>
-                    <p className='header-subtitle'>General Details</p>
-                    <div className='details-content'>
-                        <Row>
-                            <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='First Name' />
-                                <input className='input-text' placeholder='Phone Number' />
-                            </Col>
-                            <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Last Name' />
-                                <div className='datepicker'>
-                                    <DatePicker
-                                        placeholderText='--/--/----'
-                                        selected={this.state.startDate}
-                                        onChange={this.handleChangedate}
-                                    />
-                                </div>
-                            </Col>
-                            <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Email' />
-                                <input className='input-text' placeholder='------' />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={{ size: 8 }} >
-                                <div className='select'>
-                                    <Select
-                                        value={selectedTheme}
-                                        onChange={this.handleChangeTheme}
-                                        options={this.props.themes}
-                                        placeholder='Party Theme'
-                                        styles={colourStyles}
-                                    />
-                                </div>
-                                <input className='input-text' placeholder='Party Venue' />
-                            </Col>
-                            <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Guest Count' />
-                                <div className='select'>
-                                    <Select
-                                        value={selectedCity}
-                                        onChange={this.handleChangeCity}
-                                        options={this.props.cities}
-                                        placeholder='City'
-                                        styles={colourStyles}
-                                    />
-                                </div>
-                            </Col>
 
-                        </Row>
-                        <input className='input-text' placeholder='Party Title' />
-                    </div>
-                </Container>
-                : <div className='loader-dots' />
+            <Container fluid={true} className='details' >
+                <p className='header-title'>Party Details</p>
+                <p className='header-subtitle'>General Details</p>
+                <div className='details-content'>
+                    <Row>
+                        <Col md={{ size: 4 }} >
+                            <input className='input-text' placeholder='First Name' />
+                            <input className='input-text' placeholder='Phone Number' />
+                        </Col>
+                        <Col md={{ size: 4 }} >
+                            <input className='input-text' placeholder='Last Name' />
+                            <div className='datepicker'>
+                                <DatePicker
+                                    placeholderText='--/--/----'
+                                    selected={this.state.startDate}
+                                    onChange={this.handleChangedate}
+                                />
+                            </div>
+                        </Col>
+                        <Col md={{ size: 4 }} >
+                            <input className='input-text' placeholder='Email' />
+                            <input className='input-text' placeholder='------' />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={{ size: 8 }} >
+                            <div className='select'>
+                                <Select
+                                    value={selectedTheme}
+                                    onChange={this.handleChangeTheme}
+                                    options={this.props.themes}
+                                    placeholder='Party Theme'
+                                    styles={colourStyles}
+                                />
+                            </div>
+                            <input className='input-text' placeholder='Party Venue' />
+                        </Col>
+                        <Col md={{ size: 4 }} >
+                            <input className='input-text' placeholder='Guest Count' />
+                            <div className='select'>
+                                <Select
+                                    value={selectedCity}
+                                    onChange={this.handleChangeCity}
+                                    options={this.props.cities}
+                                    placeholder='City'
+                                    styles={colourStyles}
+                                />
+                            </div>
+                        </Col>
+
+                    </Row>
+                    <input className='input-text' placeholder='Party Title' />
+                </div>
+            </Container>
         );
     }
 }

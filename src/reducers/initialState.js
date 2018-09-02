@@ -4,13 +4,14 @@ export default {
     userinfo: {},
     partydetails:{},
     catalogue: {
-      loaded: false,
+     
       data: {
         snacks: [],
         cities: [],
         services: [],
         meals: [],
-        themes: []
+        themes: [],
+        loaded: false
       }
     }
   }

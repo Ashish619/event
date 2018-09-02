@@ -16,6 +16,7 @@ import { ConnectedRouter } from "react-router-redux";
 // Global container components
 import Event from "containers/Event";
 import SignIn from "containers/SignIn";
+import SignUp from "containers/SignUp";
 import PartyDetails from "containers/PartyDetails";
 import vendorDetails from "containers/vendorDetails";
 import MyParty from "containers/MyParty";
@@ -34,7 +35,8 @@ app && ReactDOM.render(
             <ConnectedRouter history={history}>
                 <Switch>
                     <Route exact path='/' component={Event} />
-                    <Route path='/SignIn' component={SignIn} />
+                    <Route path='/signIn' component={SignIn} />
+                    <Route path='/signUp' component={SignUp} />
                     <Route path='/bookParty' component={PartyDetails} />
                     <Route path='/businessPartner' component={vendorDetails} />
                     <Route path='/MyParty' component={MyParty} />

@@ -30,9 +30,9 @@ class SignIn extends Component {
   }
 
   componentWillMount = () => {
-    if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
-      window.location.pathname = '/MyParty';
-    }
+    /*  if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
+        window.location.pathname = '/MyParty';
+      }*/
   }
 
   componentDidUpdate = () => {
@@ -75,9 +75,12 @@ class SignIn extends Component {
                 </NavItem>
                 <NavItem>
                   <NavLink href='/signIn'
-                    className={this.props.match.path === '/SignIn' ? 'active' : ""} >
+                    className={this.props.match.path === '/signIn' ? 'active' : ""} >
                     Sign in
                   </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href='/signUp' >Sign Up</NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink className='bodered-nav'>Get In Touch</NavLink>
@@ -106,9 +109,8 @@ class SignIn extends Component {
                     </div>
                     <div className='btn-blk'>
                       <Button onClick={this.initiateLogin}>Login</Button>
-                      <a href='/bookParty' className='btn' >Continue As Guest</a>
                     </div>
-                    <p className='singup-links' >Not a Member?  <a href='/bookParty'>Sign Up</a>
+                    <p className='singup-links' >Not a Member?  <a href='/signUp'>Sign Up</a>
                       <br /> <a href=''> Forget password?</a>
                     </p>
                   </form>
