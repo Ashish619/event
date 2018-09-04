@@ -1,0 +1,8 @@
+{
+  "main.css": "assets/css/main.css",
+  "main.js": "assets/js/main.js",
+  "main.js.map": "main.js.map",
+  "shouldUseRelativeAssetPaths\\assets\\gallery.jpg": "shouldUseRelativeAssetPaths/assets/gallery.173c2235.jpg",
+  "shouldUseRelativeAssetPaths\\assets\\header_background.jpg": "shouldUseRelativeAssetPaths/assets/header_background.8664cbf4.jpg",
+  "shouldUseRelativeAssetPaths\\assets\\logo.png": "shouldUseRelativeAssetPaths/assets/logo.2b242a07.png"
+}
