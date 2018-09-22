@@ -37,7 +37,12 @@ class SignIn extends Component {
 
   componentDidUpdate = () => {
     if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
-      window.location.pathname = '/MyParty';
+
+      if (this.props.userinfo.role == 3) {
+        window.location.pathname = '/MyPartyVendor';
+      } else if (this.props.userinfo.role == 2) {
+        window.location.pathname = '/MyPartyHost';
+      }
     }
   }
 
@@ -49,6 +54,12 @@ class SignIn extends Component {
 
   initiateLogin = () => {
     this.props.actions.fetchUserDetails(this.username.value, this.password.value);
+  }
+
+  forgetPwd = () => {
+
+    console.log(this.username);
+    actions.resetPassword(this.username.value).then(res => res.json()).then(res => { console.log(res); });
   }
 
   render() {
@@ -111,7 +122,7 @@ class SignIn extends Component {
                       <Button onClick={this.initiateLogin}>Login</Button>
                     </div>
                     <p className='singup-links' >Not a Member?  <a href='/signUp'>Sign Up</a>
-                      <br /> <a href=''> Forget password?</a>
+                      <br /> <a onClick={this.forgetPwd}> Forget password?</a>
                     </p>
                   </form>
                 </div>

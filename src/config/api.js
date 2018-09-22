@@ -38,3 +38,41 @@ export const registerVendor = () => {
 };
 
 
+export const registeHost = () => {
+  return `${baseUrl}/register`;
+};
+
+
+export const getLogout = () => {
+  return `${baseUrl}/logout`;
+};
+
+export const getParty = (partyId) => {
+  return `${baseUrl}/party/${partyId}`;
+};
+
+export const updateVendor = (email) => {
+  return `${baseUrl}/vendor/${email}`;
+};
+
+export const updateParty = (partyId, state) => {
+  return `${baseUrl}/party/${partyId}?state=${state}`;
+};
+
+export const forgetPassword = () => {
+  return `${baseUrl}/forgotpwd`;
+};
+
+export const updateHost = (email) => {
+  return `${baseUrl}/user/${email}`;
+};
+
+
+export const planParty = () => {
+  return `${baseUrl}/party`;
+};
+
+
+export const updatePartyIdHost = (id) => {
+  return `${baseUrl}/party/${id}`;
+};

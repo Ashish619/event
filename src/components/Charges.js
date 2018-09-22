@@ -7,7 +7,7 @@ class Stepper extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: '',
+            value: this.props.defaultValue ||'' ,
         };
     }
     handleChange = (e) => {
@@ -20,7 +20,7 @@ class Stepper extends Component {
 
         return (
             <input
-                value={this.state.value}
+                value={ this.state.value}
                 placeholder={this.props.placeholder}
                 className='text-charges'
                 onChange={this.handleChange}
@@ -33,7 +33,8 @@ class Stepper extends Component {
 Stepper.propTypes = {
     isDisabledEl: PropTypes.any,
     setref: PropTypes.func,
-    placeholder: PropTypes.string
+    placeholder: PropTypes.string,
+    defaultValue : PropTypes.any
 
 };
 

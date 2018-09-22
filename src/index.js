@@ -17,10 +17,13 @@ import { ConnectedRouter } from "react-router-redux";
 import Event from "containers/Event";
 import SignIn from "containers/SignIn";
 import SignUp from "containers/SignUp";
-import PartyDetails from "containers/PartyDetails";
+import MyPartyHost from "containers/MyPartyHost";
+import HostDetails from "containers/HostDetails";
 import vendorDetails from "containers/vendorDetails";
-import MyParty from "containers/MyParty";
-
+import MyPartyVendor from "containers/MyPartyVendor";
+import VendorEdit from "containers/VendorEdit";
+import HostEdit from "containers/HostEdit";
+import PlanParty from "containers/PlanParty";
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import "assets/styles/index.scss";
@@ -37,9 +40,14 @@ app && ReactDOM.render(
                     <Route exact path='/' component={Event} />
                     <Route path='/signIn' component={SignIn} />
                     <Route path='/signUp' component={SignUp} />
-                    <Route path='/bookParty' component={PartyDetails} />
+                    <Route path='/bookParty' component={HostDetails} />
                     <Route path='/businessPartner' component={vendorDetails} />
-                    <Route path='/MyParty' component={MyParty} />
+                    <Route path='/MyPartyVendor' component={MyPartyVendor} />
+                    <Route path='/vendorEdit' component={VendorEdit} />
+                    <Route path='/MyPartyHost' component={MyPartyHost} />
+                    <Route path='/HostEdit' component={HostEdit} />
+                    <Route path='/PlanParty' component={PlanParty} />
+
                 </Switch>
             </ConnectedRouter>
         </PersistGate>

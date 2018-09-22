@@ -133,6 +133,14 @@ p {
     text-align: center;
 }
 
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
 .input-text {
     border: none;
     border-bottom: 1px solid #b30274;
@@ -180,6 +188,9 @@ p {
     .react-datepicker__input-container {
         display: block;
         width: 100%;
+    }
+    .react-datepicker__time-list {
+        padding: 0;
     }
     input {
         width: 100%;
@@ -447,7 +458,14 @@ p {
                 .rem-blk,
                 .btn-blk,
                 .singup-links {
-                    text-align: center
+                    text-align: center;
+                    a {
+                        color: #007bff !important;
+                        cursor: pointer;
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
                 }
                 .rem-blk.signup {
                     label {

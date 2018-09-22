@@ -6,12 +6,20 @@ export default function event(state = initialState.event, action) {
   switch (action.type) {
     case types.RESET_EVENT_DETAILS:
       return Object.assign({}, state, {
-        ...initialState.event
+        catalogue: {
+          data: {
+            cities: [],
+            services: [],
+            snacks: [],
+            meals: [],
+            themes: [],
+            loaded: false
+          }
+        }
       });
     case types.GET_EVENT_DETAILS:
       return mergeDeep({}, state, {
         catalogue: {
-      
           data: {
             cities: action.value.cities,
             services: action.value.services,
@@ -30,8 +38,6 @@ export default function event(state = initialState.event, action) {
       return mergeDeep({}, state, {
         partydetails: action.value
       });
-
-
     default:
       return state;
   }

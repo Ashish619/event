@@ -7,9 +7,17 @@ class Stepper extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 0,
+            value: this.props.defaultValue || 0,
 
         };
+    }
+
+
+    componentDidUpdate = (prevProps) => {
+        if (this.props.defaultValue !== prevProps.defaultValue) {
+            this.setState({ value: this.props.defaultValue });
+        }
+
     }
     handleChange = (e) => {
         if (this.props.isDisabledEl.checked) {
@@ -64,7 +72,8 @@ class Stepper extends Component {
 
 Stepper.propTypes = {
     isDisabledEl: PropTypes.any,
-    setref: PropTypes.func
+    setref: PropTypes.func,
+    defaultValue: PropTypes.any
 
 };
 

@@ -53,7 +53,7 @@ class vendorDetails extends Component {
                 services: this.props.services,
                 snacksVeg: this.props.snacks,
                 meals: this.props.meals
-            });
+            }, () => { this.forceUpdate(); });
         }
     }
 
@@ -109,7 +109,7 @@ class vendorDetails extends Component {
     render() {
 
         if (this.props.loaded) {
-            const { selectedCity, selectedTheme } = this.state;
+            const { selectedCity } = this.state;
             const colourStyles = {
                 control: styles => ({ ...styles, backgroundColor: 'white', borderColor: '#b30274' }),
                 placeholder: styles => ({ ...styles, color: ' #b2b2b2' }),
@@ -194,16 +194,22 @@ class vendorDetails extends Component {
                     <div className='details-content'>
 
                         <Row>
-                            <Col md={{ size: 8 }} >
+                            <Col md={{ size: 4 }} >
                                 <input className='input-text' placeholder='Company Name'
                                     name='coname'
                                     value={this.state.coname}
                                     onChange={this.handleChange} />
                             </Col>
                             <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Contact Name'
+                                <input className='input-text' placeholder='Manager First Name'
                                     name='mgrfirstname'
                                     value={this.state.mgrfirstname}
+                                    onChange={this.handleChange} />
+                            </Col>
+                            <Col md={{ size: 4 }} >
+                                <input className='input-text' placeholder='Manager Last Name'
+                                    name='mgrlastname'
+                                    value={this.state.mgrlastname}
                                     onChange={this.handleChange} />
                             </Col>
                         </Row>
