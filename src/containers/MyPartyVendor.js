@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 import { withRouter } from "react-router";
 import * as actions from "actions/events";
 import { Container, Row, Col } from 'reactstrap';
-
+import StarRatingComponent from 'react-star-rating-component';
 
 class MyPartyVendor extends Component {
     constructor(props) {
@@ -15,20 +15,28 @@ class MyPartyVendor extends Component {
             currentParty: {},
             showPartyEdit: false,
             partyid: null,
-            currentStatus: null
+            currentStatus: null,
+            rating: 1,
+            showPenalityBox: false
         };
 
+        this.userinfo = {
 
+            feedback: ""
+
+        };
     }
 
     componentWillMount = () => {
         if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
             window.location.pathname = '/SignIn';
         }
-        
+
     }
 
-
+    onStarClick(nextValue) {
+        this.setState({ rating: nextValue });
+    }
     logout = () => {
         actions.logout(this.props.userinfo.sessiontoken);
     }
@@ -49,12 +57,69 @@ class MyPartyVendor extends Component {
     }
 
     changeStatus = (state) => {
-        actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state)
-            .then(res => res.json());
+
+        if (state == "Cancelled") {
+            this.setState({ showPenalityBox: true });
+        } else {
+
+            actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state)
+                .then(function (response) {
+                    return response.json();
+                }).then(res => {
+
+                    this.getPartyId();
+                }
+                ).catch(error => { console.log(error); });
+        }
     }
+
+    confirmCancel = () => {
+
+        actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, "Cancelled")
+            .then(function (response) {
+                return response.json();
+            }).then(res => {
+                this.setState({ showPenalityBox: false }, () => { this.getPartyId(); });
+
+            }
+            ).catch(error => { console.log(error); });
+    }
+
+    rejectCancel = () => {
+        this.setState({ showPenalityBox: false });
+    }
+
     closeView = () => {
-        this.setState({ showPartyEdit: false });
+        this.props.actions.fetchPartyDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+        this.setState({
+            showPartyEdit: false,
+            rating: 1
+        }, () => {
+            this.userinfo.feedback = "";
+        });
     }
+
+
+
+    sendRatingFeedback = () => {
+
+        actions.sendRateFeed(this.state.partyid,
+            {
+                "fid": 0,
+                "email": this.props.userinfo.email,
+                "stars": this.state.rating,
+                "feedback": this.userinfo.feedback.value,
+                "partyid": this.state.partyid
+            }
+            , this.props.userinfo.sessiontoken).then(function (response) {
+                return response.json();
+            }).then(res => {
+                alert("feedack success");
+            }
+            ).catch(error => { console.log(error); });
+    }
+
+
     render() {
 
         let partydetails = this.props.partydetails.parties || [];
@@ -97,18 +162,54 @@ class MyPartyVendor extends Component {
                     {item.service} {item.is_must}
                 </div>));
         }
+        if (this.state.showPenalityBox) {
+
+            return (<Container fluid={true} className='details' >
+                <p className='header-title'>Penality Details</p>
+                <button onClick={this.confirmCancel}>Confirm</button>
+                <button onClick={this.rejectCancel}>Cancel</button>
+                    </Container>);
+        }
         if (this.state.showPartyEdit) {
             return (<Container fluid={true} className='details' >
                 <p className='header-title'>Party Details</p>
                 <button onClick={this.closeView}>close</button>
                 <p className='header-subtitle'>Action</p>
                 Status{this.state.currentParty.status}
-                {this.state.currentParty.status == 'Ordered' ?
-                    <div>
-                        <button onClick={this.changeStatus.bind(this, 'Accepted')}>Accept</button>
-                        <button onClick={this.changeStatus.bind(this, 'Rejected')}>Reject</button>
-                    </div> :
-                    <div> <button onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel</button></div>}
+
+                {this.state.currentParty.status == "Processing"
+                    || this.state.currentParty.status == "Pending"
+                    ?
+                    <div> <button onClick={this.changeStatus.bind(this, 'Accepted')}>Accept</button>
+                        <button onClick={this.changeStatus.bind(this, 'Rejected')}>Rejected</button>
+                    </div> : null}
+
+                {this.state.currentParty.status == "Accepted"
+                    ?
+                    <div> <button onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel</button>
+                        <button onClick={this.changeStatus.bind(this, 'Started')}>Start</button>
+                    </div> : null}
+
+                {this.state.currentParty.status == "Started"
+                    ?
+                    <div> <button onClick={this.changeStatus.bind(this, 'finished')}>finish</button>
+                    </div> : null}
+
+                {this.state.currentParty.status == "Cancelled"
+                    || this.state.currentParty.status == "finished"
+                    ? <div>
+                        Rating : {this.state.rating}
+                        <StarRatingComponent
+                            name='rating'
+                            starCount={5}
+                            value={this.state.rating}
+                            onStarClick={this.onStarClick.bind(this)}
+                        />
+
+                        <input ref={el =>
+                            this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
+                        <button onClick={this.sendRatingFeedback}>Send feedback</button>
+                      </div> : null}
                 <p className='header-subtitle'>General Details</p>
                 Title {this.state.currentParty.title}<br />
                 host_first_name {this.state.currentParty.host_first_name}<br />

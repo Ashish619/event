@@ -76,3 +76,9 @@ export const planParty = () => {
 export const updatePartyIdHost = (id) => {
   return `${baseUrl}/party/${id}`;
 };
+
+export const sendRatingFeedback = (id) => {
+  return `${baseUrl}/party/${id}/feedback`;
+};
+
+

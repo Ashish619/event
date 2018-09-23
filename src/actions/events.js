@@ -19,7 +19,8 @@ import {
     registeHost,
     updateHost,
     planParty,
-    updatePartyIdHost
+    updatePartyIdHost,
+    sendRatingFeedback
 } from "config/api";
 
 export function resetEmployee() {
@@ -189,7 +190,7 @@ export function planPartyHost(userinfo, sessiontoken) {
 
 }
 
-export function updatePartyHost(id,partyinfo, sessiontoken) {
+export function updatePartyHost(id, partyinfo, sessiontoken) {
 
     const updatePartyUrl = updatePartyIdHost(id);
     return fetch(updatePartyUrl, {
@@ -206,6 +207,23 @@ export function updatePartyHost(id,partyinfo, sessiontoken) {
         ).catch(error => { console.log(error); });
 
 }
+
+
+export function sendRateFeed(id, ratefeed, sessiontoken) {
+
+    const sendRatingFeedbackUrl = sendRatingFeedback(id);
+    return fetch(sendRatingFeedbackUrl, {
+        method: 'PUT',
+        headers: { ...headers(), sessiontoken },
+        credentials: 'include',
+        body: JSON.stringify(ratefeed)
+    });
+        
+
+}
+
+
+
 
 
 export function updateHostDetails(userinfo, sessiontoken, email) {

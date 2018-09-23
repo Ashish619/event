@@ -10,7 +10,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import Stepper from 'components/Stepper';
 import moment from 'moment';
-
+import StarRatingComponent from 'react-star-rating-component';
 
 class MyPartyHost extends Component {
     constructor(props) {
@@ -28,7 +28,9 @@ class MyPartyHost extends Component {
             selectedTheme: null,
             services: this.props.services,
             snacksVeg: this.props.snacks,
-            meals: this.props.meals
+            meals: this.props.meals,
+            rating: 1,
+            showPenalityBox: false
 
         };
 
@@ -39,14 +41,17 @@ class MyPartyHost extends Component {
             email: "",
             partyVenue: "",
             guestcount: "",
-            partytitle: ""
+            partytitle: "",
+            feedback: ""
 
         };
         this.services = [];
         this.snacksVeg = [];
         this.meals = [];
     }
-
+    onStarClick(nextValue) {
+        this.setState({ rating: nextValue });
+    }
     componentDidUpdate(prevProps) {
 
 
@@ -265,18 +270,69 @@ class MyPartyHost extends Component {
             () => { this.getPartyId(); });
 
     }
-
     changeStatus = (state) => {
-        actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state)
-            .then(res => res.json());
+
+        if (state == "Cancelled") {
+            this.setState({ showPenalityBox: true });
+        } else {
+
+            actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state)
+                .then(function (response) {
+                    return response.json();
+                }).then(res => {
+
+                    this.getPartyId();
+                }
+                ).catch(error => { console.log(error); });
+        }
+    }
+
+    confirmCancel = () => {
+
+        actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, "Cancelled")
+            .then(function (response) {
+                return response.json();
+            }).then(res => {
+                this.setState({ showPenalityBox: false }, () => { this.getPartyId(); });
+
+            }
+            ).catch(error => { console.log(error); });
+    }
+
+    rejectCancel = () => {
+        this.setState({ showPenalityBox: false });
     }
     closeView = () => {
-        this.setState({ showPartyEdit: false });
+        this.props.actions.fetchPartyDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+        this.setState({
+            showPartyEdit: false,
+            rating: 1
+        }, () => {
+            this.userinfo.feedback = "";
+        });
+    }
+
+    sendRatingFeedback = () => {
+
+        actions.sendRateFeed(this.state.partyid,
+            {
+                "fid": 0,
+                "email": this.props.userinfo.email,
+                "stars": this.state.rating,
+                "feedback": this.userinfo.feedback.value,
+                "partyid": this.state.partyid
+            }
+            , this.props.userinfo.sessiontoken).then(function (response) {
+                return response.json();
+            }).then(res => {
+                alert("feedack success");
+            }
+            ).catch(error => { console.log(error); });
     }
     render() {
 
 
-        const { selectedCity, selectedTheme } = this.state;
+        const { selectedTheme } = this.state;
 
         const colourStyles = {
             control: styles => ({ ...styles, backgroundColor: 'white', borderColor: '#b30274' }),
@@ -390,7 +446,14 @@ class MyPartyHost extends Component {
                 </Row>
             );
         });
+        if (this.state.showPenalityBox) {
 
+            return (<Container fluid={true} className='details' >
+                <p className='header-title'>Penality Details</p>
+                <button onClick={this.confirmCancel}>Confirm</button>
+                <button onClick={this.rejectCancel}>Cancel</button>
+                    </Container>);
+        }
 
         return (<Container fluid={true} className='details' >
             <div className={this.state.showPartyEdit ? "hide" : "show"}>
@@ -406,24 +469,40 @@ class MyPartyHost extends Component {
                 <button onClick={this.closeView}>close</button>
                 <p className='header-subtitle'>Action</p>
                 Status{this.state.currentParty.status}
-                {this.state.currentParty.status == 'Ordered' ?
-                    <div>
-                        <button onClick={this.changeStatus.bind(this, 'Accepted')}>Accept</button>
-                        <button onClick={this.changeStatus.bind(this, 'Rejected')}>Reject</button>
-                    </div> :
-                    <div> <button onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel</button></div>}
+                {this.state.currentParty.status == "Processing"
+                    || this.state.currentParty.status == "Pending"
+                    || this.state.currentParty.status == "Accepted" ?
+                    <div> <button onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel</button></div> : null}
+                {this.state.currentParty.status == "Cancelled"
+                    || this.state.currentParty.status == "finished"
+                    ? <div> <button onClick={this.changeStatus.bind(this, 'Closed')}>Close</button>
+                        <div>
+                            Rating : {this.state.rating}
+                            <StarRatingComponent
+                                name='rating'
+                                starCount={5}
+                                value={this.state.rating}
+                                onStarClick={this.onStarClick.bind(this)}
+                            />
+                        </div>
+                        <input ref={el =>
+                            this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
+                        <button onClick={this.sendRatingFeedback}>Send feedback</button>
+                      </div> : null}
+
+
                 <p className='header-title'>Party Details</p>
                 <p className='header-subtitle'>Edit Details</p>
                 <div className='details-content'>
                     <Row>
                         <Col md={{ size: 4 }} >
-                            <input ref={el =>
+                            <input disabled='disabled' ref={el =>
                                 this.userinfo.firstname = el} className='input-text' placeholder='First Name' />
-                            <input ref={el =>
+                            <input disabled='disabled' ref={el =>
                                 this.userinfo.mobile = el} className='input-text' placeholder='Phone Number' />
                         </Col>
                         <Col md={{ size: 4 }} >
-                            <input ref={el =>
+                            <input disabled='disabled' ref={el =>
                                 this.userinfo.lastname = el} className='input-text' placeholder='Last Name' />
                             <div className='datepicker'>
                                 <DatePicker
