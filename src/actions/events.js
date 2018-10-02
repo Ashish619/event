@@ -218,7 +218,7 @@ export function sendRateFeed(id, ratefeed, sessiontoken) {
         credentials: 'include',
         body: JSON.stringify(ratefeed)
     });
-        
+
 
 }
 
@@ -257,19 +257,12 @@ export function updatePartyStatus(sessiontoken, partyid, state) {
 export function fetchUserDetails(username, password) {
     return function (dispatch) {
         const loginUrl = login();
-        fetch(loginUrl, {
+        return [dispatch, fetch(loginUrl, {
             method: 'POST',
             headers: headers(),
             credentials: 'include',
             body: JSON.stringify({ username, password })
-        }).then(function (response) {
-            return response.json();
-        }).then(response => {
-            dispatch({
-                type: types.GET_EVENT_SESSION,
-                value: response
-            });
-        }).catch(error => { console.log(error); });
+        })];
     };
 }
 

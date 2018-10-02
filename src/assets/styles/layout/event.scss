@@ -151,6 +151,15 @@ p {
     color: #000;
 }
 
+.alert {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    top: 0;
+    border: 0;
+    border-radius: 0px;
+}
+
 .select {
     * {
         outline: none;

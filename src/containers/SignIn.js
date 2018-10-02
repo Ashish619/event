@@ -5,6 +5,8 @@ import { bindActionCreators } from "redux";
 import { withRouter, Redirect } from "react-router";
 import PropTypes from "prop-types";
 import * as actions from "actions/events";
+import Alerts from "components/Alerts";
+import * as types from "actions/types";
 
 import {
   Container, Row, Col, Collapse,
@@ -22,7 +24,10 @@ class SignIn extends Component {
     super(props);
 
     this.state = {
-      isOpen: false
+      isOpen: false,
+      alertOpen: false,
+      alertColor: '',
+      alertMessage: ''
     };
 
     this.username = null;
@@ -35,6 +40,10 @@ class SignIn extends Component {
       }*/
   }
 
+  alertClose = () => {
+    this.setState({ alertOpen: false });
+  }
+
   componentDidUpdate = () => {
     if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
 
@@ -43,6 +52,7 @@ class SignIn extends Component {
       } else if (this.props.userinfo.role == 2) {
         window.location.pathname = '/MyPartyHost';
       }
+
     }
   }
 
@@ -53,19 +63,90 @@ class SignIn extends Component {
   }
 
   initiateLogin = () => {
-    this.props.actions.fetchUserDetails(this.username.value, this.password.value);
-  }
 
+    if (this.username.value == "" || this.password.value == "") {
+      this.setState({
+        alertOpen: true,
+        alertColor: 'warning',
+        alertMessage: 'username or passsword is empty'
+      });
+
+    } else {
+
+      let [dispatch, promise] = this.props.actions.fetchUserDetails(this.username.value, this.password.value);
+
+
+      promise.then(function (response) {
+        return response.json();
+      }).then(response => {
+
+        if (response.hasOwnProperty('status') && response.status == false) {
+          this.setState({
+            alertOpen: true,
+            alertColor: 'warning',
+            alertMessage: response.message
+          });
+        }
+        else {
+          dispatch({
+            type: types.GET_EVENT_SESSION,
+            value: response
+          });
+        }
+      }).catch(error => {
+        this.setState({
+          alertOpen: true,
+          alertColor: 'warning',
+          alertMessage: 'Network Issue'
+        });
+      });
+    }
+  }
   forgetPwd = () => {
 
-    console.log(this.username);
-    actions.resetPassword(this.username.value).then(res => res.json()).then(res => { console.log(res); });
+    if (this.username.value == "") {
+      this.setState({
+        alertOpen: true,
+        alertColor: 'warning',
+        alertMessage: 'username is empty'
+      });
+
+    } else {
+      actions.resetPassword(this.username.value)
+        .then(response => response.json())
+        .then(response => {
+          if (response.hasOwnProperty('status') && response.status == false) {
+            this.setState({
+              alertOpen: true,
+              alertColor: 'warning',
+              alertMessage: response.message
+            });
+          } else {
+            this.setState({
+              alertOpen: true,
+              alertColor: 'success',
+              alertMessage: response.message
+            });
+          }
+        }).catch(error => {
+          this.setState({
+            alertOpen: true,
+            alertColor: 'warning',
+            alertMessage: 'Network Issue'
+          });
+        });
+    }
   }
 
   render() {
 
     return (
       <Container fluid={true} className='landing'>
+        <Alerts
+          isOpen={this.state.alertOpen}
+          color={this.state.alertColor}
+          Message={this.state.alertMessage}
+          onDismiss={this.alertClose} />
         <Navbar expand='md'>
           <Container>
             <NavbarBrand />
