@@ -151,14 +151,20 @@ class VendorEdit extends Component {
     }
 
     serviceDefault = (param, item) => {
+
+      
         let res = this.state.vendor;
         let defaultValue = '';
         if (res.hasOwnProperty(param)) {
-            defaultValue = res[param].filter(element =>
-                element.service == item.id
-            )[0].price;
-            return defaultValue;
-        }
+           res[param].forEach(element => {
+                if(element.service == item.id){
+                    defaultValue = element.price;
+                }
+             });
+         
+            
+            }
+        return defaultValue;
 
     }
 
