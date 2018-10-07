@@ -120,7 +120,7 @@ class SignIn extends Component {
             this.setState({
               alertOpen: true,
               alertColor: 'success',
-              alertMessage: response.message
+              alertMessage: response.msg
             });
           }
         }).catch(error => {
