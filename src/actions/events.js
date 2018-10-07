@@ -179,13 +179,8 @@ export function updatePartyHost(id, partyinfo, sessiontoken) {
         headers: { ...headers(), sessiontoken },
         credentials: 'include',
         body: JSON.stringify(partyinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).then(res => {
-            window.location.href = "/MyPartyHost";
-        }
-        ).catch(error => { console.log(error); });
+    });
+        
 
 }
 

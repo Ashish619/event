@@ -115,7 +115,7 @@ class MyPartyVendor extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.loaded !== prevProps.loaded) {
-            if (this.props.unabletofetchPrePartyDetails  == true) {
+            if (this.props.unabletofetchPrePartyDetails == true) {
                 this.setState({
                     alertOpen: true,
                     alertColor: 'warning',
@@ -465,12 +465,12 @@ class MyPartyVendor extends Component {
                     {this.state.currentParty.status == "Started"
                         ?
                         <div> <button className='btn btn-action'
-                            onClick={this.changeStatus.bind(this, 'finished')}>finish
+                            onClick={this.changeStatus.bind(this, 'Finished')}>finish
                               </button>
                         </div> : null}
 
                     {this.state.currentParty.status == "Cancelled"
-                        || this.state.currentParty.status == "finished"
+                        || this.state.currentParty.status == "Finished"
                         ? <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
                             <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
                             <StarRatingComponent

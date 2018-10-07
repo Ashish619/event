@@ -65,7 +65,7 @@ class MyPartyHost extends Component {
 
 
         if (this.props.loaded !== prevProps.loaded) {
-            if (this.props.unabletofetchPrePartyDetails  == true) {
+            if (this.props.unabletofetchPrePartyDetails == true) {
                 this.setState({
                     alertOpen: true,
                     alertColor: 'warning',
@@ -125,12 +125,35 @@ class MyPartyHost extends Component {
 
 
     getPartyId = () => {
-        actions.getPartyByID(this.state.partyid, this.props.userinfo.sessiontoken)
-            .then(res => res.json()).then(res => {
-                this.setState({ currentParty: res, showPartyEdit: true }, () => {
+
+
+        let promise = actions.getPartyByID(this.state.partyid, this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.setState({ currentParty: response, showPartyEdit: true }, () => {
                     this.updateParty();
                 });
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
             });
+        });
+
+
     }
 
     updateParty = () => {
@@ -241,6 +264,28 @@ class MyPartyHost extends Component {
 
     }
     submitRequest = () => {
+
+        if (this.userinfo.firstname.value == "" ||
+        this.state.selectedCity == null ||
+        this.userinfo.lastname.value == "" ||
+        this.userinfo.mobile.value == "" ||
+        this.userinfo.email.value == "" ||
+        this.userinfo.partytitle.value == "" ||
+        this.userinfo.guestcount.value == "" ||
+        this.userinfo.partyVenue.value == "" ||
+
+        this.state.selectedTheme.theme_id <= 0 ||
+        this.state.startDate == null ||
+        this.state.startTime == null
+    ) {
+        this.setState({
+            alertOpen: true,
+            alertColor: 'warning',
+            alertMessage: 'please fill general details'
+        });
+        return;
+    }
+
         var removeDups = (list) => {
             var uniq = new Set(list.map(e => JSON.stringify(e)));
             return Array.from(uniq).map(e => JSON.parse(e));
@@ -306,11 +351,51 @@ class MyPartyHost extends Component {
         };
 
 
-        actions.updatePartyHost(this.state.partyid, partyinfo, this.props.userinfo.sessiontoken);
+     let promise =  actions.updatePartyHost(this.state.partyid, partyinfo, this.props.userinfo.sessiontoken);
+
+     promise.then(function (response) {
+        return response.json();
+    }).then(response => {
+
+        if (response.hasOwnProperty('status') && response.status == false) {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: response.message
+            });
+        }
+        else {
+
+            this.setState({
+                alertOpen: true,
+                alertColor: 'success',
+                alertMessage: 'you have been successfully created party' +
+                    'and will be redirected to party page'
+            }, () => {
+                setTimeout(() => {
+                    window.location.href = "/MyPartyHost";
+                }, 5000);
+            });
+
+        }
+    }).catch(error => {
+        this.setState({
+            alertOpen: true,
+            alertColor: 'warning',
+            alertMessage: 'Network Issue'
+        });
+    });
+    
 
 
     }
 
+    restrictNum = (event) => {
+
+        if (/\D/.test(event.target.value)) {
+            event.target.value = event.target.value.replace(/\D/g, "");
+        }
+    }
     logout = () => {
         let promise = actions.logout(this.props.userinfo.sessiontoken);
 
@@ -358,34 +443,106 @@ class MyPartyHost extends Component {
             this.setState({ showPenalityBox: true });
         } else {
 
-            actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state)
-                .then(function (response) {
-                    return response.json();
-                }).then(res => {
+            let promise = actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, state);
 
-                    this.getPartyId();
+            promise.then(function (response) {
+                return response.json();
+            }).then(response => {
+
+                if (response.hasOwnProperty('status') && response.status == false) {
+                    this.setState({
+                        alertOpen: true,
+                        alertColor: 'warning',
+                        alertMessage: response.message
+                    });
                 }
-                ).catch(error => { console.log(error); });
+                else {
+                    this.setState({
+
+                        alertOpen: true,
+                        alertColor: 'success',
+                        alertMessage: response
+                    },
+                        this.getPartyId());
+                }
+            }).catch(error => {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: 'Network Issue'
+                });
+            });
+
         }
     }
 
     confirmCancel = () => {
+        let promise = actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, "Cancelled");
 
-        actions.updatePartyStatus(this.props.userinfo.sessiontoken, this.state.partyid, "Cancelled")
-            .then(function (response) {
-                return response.json();
-            }).then(res => {
-                this.setState({ showPenalityBox: false }, () => { this.getPartyId(); });
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.setState({
+                    showPenalityBox: false,
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: response
+                }, () => { this.getPartyId(); });
 
             }
-            ).catch(error => { console.log(error); });
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
     }
 
     rejectCancel = () => {
         this.setState({ showPenalityBox: false });
     }
     closeView = () => {
-        this.props.actions.fetchPartyDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+        let [dispatch, promise] = this.props.actions.fetchPartyDetails(this.props.userinfo.email,
+            this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+
+                dispatch({
+                    type: types.GET_PARTY_DETAILS,
+                    value: response
+                });
+
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
+
         this.setState({
             showPartyEdit: false,
             rating: 1
@@ -396,7 +553,7 @@ class MyPartyHost extends Component {
 
     sendRatingFeedback = () => {
 
-        actions.sendRateFeed(this.state.partyid,
+        let promise = actions.sendRateFeed(this.state.partyid,
             {
                 "fid": 0,
                 "email": this.props.userinfo.email,
@@ -404,12 +561,36 @@ class MyPartyHost extends Component {
                 "feedback": this.userinfo.feedback.value,
                 "partyid": this.state.partyid
             }
-            , this.props.userinfo.sessiontoken).then(function (response) {
-                return response.json();
-            }).then(res => {
-                alert("feedack success");
+            , this.props.userinfo.sessiontoken);
+
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
             }
-            ).catch(error => { console.log(error); });
+            else {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: response.msg
+                });
+
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
     }
     render() {
 
@@ -425,15 +606,20 @@ class MyPartyHost extends Component {
 
         let serviceCard = this.state.services.map((item, i) => {
             return (<Col md={{ size: 4 }} key={i} >
-                <label className='control control--checkbox'>
-                    {item.desc}
-                    <input type='checkbox'
-                        ref={el => {
-                            this.setChecked(item, "services", el);
-                            this.services.push({ id: item.id, el: el });
-                        }} />
-                    <div className='control__indicator' />
-                </label>
+                <div className='item-list'>
+                    <img src={'assets/images/' + item.image} />
+                    <div className='ctrl'>
+                        <label className='control control--checkbox'>
+                            {item.desc}
+                            <input type='checkbox'
+                                ref={el => {
+                                    this.setChecked(item, "services", el);
+                                    this.services.push({ id: item.id, el: el });
+                                }} />
+                            <div className='control__indicator' />
+                        </label>
+                    </div>
+                </div>
                     </Col>);
         });
 
@@ -443,7 +629,7 @@ class MyPartyHost extends Component {
 
                 <Col md={{ size: 4 }} key={i} >
                     <div className='item-list'>
-                        <img src='assets/images/item.jpg' />
+                        <img src={'assets/images/' + item.image} />
                         <div className='ctrl'>
                             <label className='control control--checkbox'>
                                 {item.desc}
@@ -476,7 +662,7 @@ class MyPartyHost extends Component {
             return (
                 <Col md={{ size: 4 }} key={i} >
                     <div className='item-list'>
-                        <img src='assets/images/item.jpg' />
+                        <img src={'assets/images/' + item.image} />
                         <div className='ctrl'>
                             <label className='control control--checkbox'>
                                 {item.desc}
@@ -609,30 +795,43 @@ class MyPartyHost extends Component {
             </div>
             <div className={this.state.showPartyEdit ? "show" : "hide"}>
                 <p className='header-title'>Party Details</p>
-                <button onClick={this.closeView}>close</button>
-                <p className='header-subtitle'>Action</p>
-                Status{this.state.currentParty.status}
-                {this.state.currentParty.status == "Processing"
-                    || this.state.currentParty.status == "Pending"
-                    || this.state.currentParty.status == "Accepted" ?
-                    <div> <button onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel</button></div> : null}
-                {this.state.currentParty.status == "Cancelled"
-                    || this.state.currentParty.status == "finished"
-                    ? <div> <button onClick={this.changeStatus.bind(this, 'Closed')}>Close</button>
-                        <div>
-                            Rating : {this.state.rating}
-                            <StarRatingComponent
-                                name='rating'
-                                starCount={5}
-                                value={this.state.rating}
-                                onStarClick={this.onStarClick.bind(this)}
-                            />
-                        </div>
-                        <input ref={el =>
-                            this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
-                        <button onClick={this.sendRatingFeedback}>Send feedback</button>
-                      </div> : null}
+                <div className='action-container'>
+                    <button className='btn btn-action'
+                        style={{ float: 'left' }} onClick={this.closeView}>Back
+                    </button>
+                    <span style={{ float: 'right' }}> Status : {this.state.currentParty.status}</span>
+                </div>
 
+                <div className='action-container' >
+                    {this.state.currentParty.status == "Processing"
+                        || this.state.currentParty.status == "Pending"
+                        || this.state.currentParty.status == "Accepted" ?
+                        <div> <button className='btn btn-action'
+                            onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel
+                              </button>
+                        </div> : null}
+                    {this.state.currentParty.status == "Cancelled"
+                        || this.state.currentParty.status == "finished"
+                        ? <div> <button className='btn btn-action'
+                            onClick={this.changeStatus.bind(this, 'Closed')}>Close
+                                </button>
+                            <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
+                                <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
+                                <StarRatingComponent
+                                    name='rating'
+                                    starCount={5}
+                                    value={this.state.rating}
+                                    onStarClick={this.onStarClick.bind(this)}
+                                />
+
+                                <input ref={el =>
+                                    this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
+                                <button className='btn btn-action'
+                                    onClick={this.sendRatingFeedback}>Send feedback
+                                </button>
+                            </Col>
+                          </div> : null}
+                </div>
 
                 <p className='header-title'>Party Details</p>
                 <p className='header-subtitle'>Edit Details</p>
@@ -642,7 +841,9 @@ class MyPartyHost extends Component {
                             <input disabled='disabled' ref={el =>
                                 this.userinfo.firstname = el} className='input-text' placeholder='First Name' />
                             <input disabled='disabled' ref={el =>
-                                this.userinfo.mobile = el} className='input-text' placeholder='Phone Number' />
+                                this.userinfo.mobile = el} 
+                                onChange={this.restrictNum}
+                                className='input-text' placeholder='Phone Number' />
                         </Col>
                         <Col md={{ size: 4 }} >
                             <input disabled='disabled' ref={el =>
@@ -689,7 +890,9 @@ class MyPartyHost extends Component {
                         </Col>
                         <Col md={{ size: 4 }} >
                             <input ref={el =>
-                                this.userinfo.guestcount = el} className='input-text' placeholder='Guest Count' />
+                                this.userinfo.guestcount = el}
+                                onChange={this.restrictNum}
+                                 className='input-text' placeholder='Guest Count' />
                             <div className='select'>
                                 {this.state.selectedCityDefault != null && this.props.cities.length > 0 &&
                                     (<Select
@@ -708,7 +911,7 @@ class MyPartyHost extends Component {
                         this.userinfo.partytitle = el} className='input-text' placeholder='Party Title' />
                 </div>
                 <p className='header-subtitle'>Services Required</p>
-                <div className='service-details'>
+                <div className='snackveg-details'>
                     <Row >
                         {serviceCard}
                     </Row>
