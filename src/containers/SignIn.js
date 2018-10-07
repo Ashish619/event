@@ -34,11 +34,6 @@ class SignIn extends Component {
     this.password = null;
   }
 
-  componentWillMount = () => {
-    /*  if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
-        window.location.pathname = '/MyParty';
-      }*/
-  }
 
   alertClose = () => {
     this.setState({ alertOpen: false });

@@ -136,10 +136,8 @@ export function registerHostDetails(userinfo) {
         method: 'POST',
         headers: openHeader(),
         body: JSON.stringify(userinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).then(res => { window.location.href = "/signIn"; }).catch(error => { console.log(error); });
+    });
+     
 
 }
 

@@ -28,17 +28,7 @@ class SignUp extends Component {
 
     }
 
-    componentWillMount = () => {
-        /*  if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
-              window.location.pathname = '/MyParty';
-          }*/
-    }
 
-    componentDidUpdate = () => {
-        /* if (this.props.userinfo.hasOwnProperty('sessiontoken')) {
-             window.location.pathname = '/MyParty';
-         }*/
-    }
     handleOptionChange = (event) => {
         this.setState({
             role: event.target.value
