@@ -48,6 +48,15 @@ class VendorEdit extends Component {
 
     }
 
+
+    componentWillMount = () => {
+        if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
+            window.location.pathname = '/SignIn';
+        }
+
+    }
+
+
     restrictNum = (event) => {
 
         if (/\D/.test(event.target.value)) {

@@ -47,7 +47,7 @@ class SignUp extends Component {
 
     initiateSignUp = () => {
         if (this.state.role === 'host') {
-            window.location.pathname = '/MyParty';
+            window.location.pathname = '/bookParty';
         } else {
             window.location.pathname = '/businessPartner';
         }
