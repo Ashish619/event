@@ -266,25 +266,25 @@ class MyPartyHost extends Component {
     submitRequest = () => {
 
         if (this.userinfo.firstname.value == "" ||
-        this.state.selectedCity == null ||
-        this.userinfo.lastname.value == "" ||
-        this.userinfo.mobile.value == "" ||
-        this.userinfo.email.value == "" ||
-        this.userinfo.partytitle.value == "" ||
-        this.userinfo.guestcount.value == "" ||
-        this.userinfo.partyVenue.value == "" ||
+            this.state.selectedCity == null ||
+            this.userinfo.lastname.value == "" ||
+            this.userinfo.mobile.value == "" ||
+            this.userinfo.email.value == "" ||
+            this.userinfo.partytitle.value == "" ||
+            this.userinfo.guestcount.value == "" ||
+            this.userinfo.partyVenue.value == "" ||
 
-        this.state.selectedTheme.theme_id <= 0 ||
-        this.state.startDate == null ||
-        this.state.startTime == null
-    ) {
-        this.setState({
-            alertOpen: true,
-            alertColor: 'warning',
-            alertMessage: 'please fill general details'
-        });
-        return;
-    }
+            this.state.selectedTheme.theme_id <= 0 ||
+            this.state.startDate == null ||
+            this.state.startTime == null
+        ) {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'please fill general details'
+            });
+            return;
+        }
 
         var removeDups = (list) => {
             var uniq = new Set(list.map(e => JSON.stringify(e)));
@@ -351,41 +351,41 @@ class MyPartyHost extends Component {
         };
 
 
-     let promise =  actions.updatePartyHost(this.state.partyid, partyinfo, this.props.userinfo.sessiontoken);
+        let promise = actions.updatePartyHost(this.state.partyid, partyinfo, this.props.userinfo.sessiontoken);
 
-     promise.then(function (response) {
-        return response.json();
-    }).then(response => {
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
 
-        if (response.hasOwnProperty('status') && response.status == false) {
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: 'you have been successfully created party' +
+                        'and will be redirected to party page'
+                }, () => {
+                    setTimeout(() => {
+                        window.location.href = "/MyPartyHost";
+                    }, 5000);
+                });
+
+            }
+        }).catch(error => {
             this.setState({
                 alertOpen: true,
                 alertColor: 'warning',
-                alertMessage: response.message
+                alertMessage: 'Network Issue'
             });
-        }
-        else {
-
-            this.setState({
-                alertOpen: true,
-                alertColor: 'success',
-                alertMessage: 'you have been successfully created party' +
-                    'and will be redirected to party page'
-            }, () => {
-                setTimeout(() => {
-                    window.location.href = "/MyPartyHost";
-                }, 5000);
-            });
-
-        }
-    }).catch(error => {
-        this.setState({
-            alertOpen: true,
-            alertColor: 'warning',
-            alertMessage: 'Network Issue'
         });
-    });
-    
+
 
 
     }
@@ -509,7 +509,7 @@ class MyPartyHost extends Component {
     }
 
     rejectCancel = () => {
-        this.setState({ showPenalityBox: false });
+        this.setState({ showPenalityBox: false }, ()=> {this.updateParty();});
     }
     closeView = () => {
         let [dispatch, promise] = this.props.actions.fetchPartyDetails(this.props.userinfo.email,
@@ -841,7 +841,7 @@ class MyPartyHost extends Component {
                             <input disabled='disabled' ref={el =>
                                 this.userinfo.firstname = el} className='input-text' placeholder='First Name' />
                             <input disabled='disabled' ref={el =>
-                                this.userinfo.mobile = el} 
+                                this.userinfo.mobile = el}
                                 onChange={this.restrictNum}
                                 className='input-text' placeholder='Phone Number' />
                         </Col>
@@ -892,7 +892,7 @@ class MyPartyHost extends Component {
                             <input ref={el =>
                                 this.userinfo.guestcount = el}
                                 onChange={this.restrictNum}
-                                 className='input-text' placeholder='Guest Count' />
+                                className='input-text' placeholder='Guest Count' />
                             <div className='select'>
                                 {this.state.selectedCityDefault != null && this.props.cities.length > 0 &&
                                     (<Select
