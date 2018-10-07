@@ -30,17 +30,17 @@ class HostDetails extends Component {
 
     register = () => {
 
-         if(this.userinfo.firstname == "" || 
-         this.userinfo.phone == "" || 
-         this.userinfo.email == "" || 
-         this.userinfo.lastname ) {
+        if (this.userinfo.firstname.value == "" ||
+            this.userinfo.phone.value == "" ||
+            this.userinfo.email.value == "" ||
+            this.userinfo.lastname.value == "") {
             this.setState({
                 alertOpen: true,
                 alertColor: 'warning',
                 alertMessage: 'please fill all the details'
             });
             return;
-         }
+        }
         let promise = actions.registerHostDetails({
             "email": this.userinfo.email.value,
             "first_name": this.userinfo.firstname.value,
@@ -124,8 +124,8 @@ class HostDetails extends Component {
                             <input ref={el =>
                                 this.userinfo.lastname = el} className='input-text' placeholder='Last Name' />
                             <input ref={el =>
-                                this.userinfo.email = el} className='input-text' placeholder='Email' 
-                              />
+                                this.userinfo.email = el} className='input-text' placeholder='Email'
+                            />
                         </Col>
                     </Row>
                 </div>

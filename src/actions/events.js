@@ -220,10 +220,8 @@ export function updateHostDetails(userinfo, sessiontoken, email) {
         headers: { ...headers(), sessiontoken },
         credentials: 'include',
         body: JSON.stringify(userinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).then(res => { window.location.href = "/MyPartyHost"; }).catch(error => { console.log(error); });
+    });
+       
 
 }
 
