@@ -115,7 +115,7 @@ class MyPartyVendor extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.loaded !== prevProps.loaded) {
-            if (this.props.unabletofetchPrePartyDetails !== prevProps.unabletofetchPrePartyDetails) {
+            if (this.props.unabletofetchPrePartyDetails  == true) {
                 this.setState({
                     alertOpen: true,
                     alertColor: 'warning',

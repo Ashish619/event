@@ -21,7 +21,12 @@ class Stepper extends Component {
     }
     handleChange = (e) => {
         if (this.props.isDisabledEl.checked) {
-            this.setState({ value: e.target.value });
+            let text = e.target.value;
+            if (/\D/.test(text)) {
+                text = text.replace(/\D/g, "");
+            }
+
+            this.setState({ value: text });
         }
     }
     increment = () => {

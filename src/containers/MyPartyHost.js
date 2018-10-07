@@ -11,6 +11,8 @@ import DatePicker from 'react-datepicker';
 import Stepper from 'components/Stepper';
 import moment from 'moment';
 import StarRatingComponent from 'react-star-rating-component';
+import * as types from "actions/types";
+import Alerts from "components/Alerts";
 
 class MyPartyHost extends Component {
     constructor(props) {
@@ -30,7 +32,10 @@ class MyPartyHost extends Component {
             snacksVeg: this.props.snacks,
             meals: this.props.meals,
             rating: 1,
-            showPenalityBox: false
+            showPenalityBox: false,
+            alertOpen: false,
+            alertColor: '',
+            alertMessage: ''
 
         };
 
@@ -52,10 +57,21 @@ class MyPartyHost extends Component {
     onStarClick(nextValue) {
         this.setState({ rating: nextValue });
     }
+
+    alertClose = () => {
+        this.setState({ alertOpen: false });
+    }
     componentDidUpdate(prevProps) {
 
 
         if (this.props.loaded !== prevProps.loaded) {
+            if (this.props.unabletofetchPrePartyDetails  == true) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: 'Some Network issue in fetching list of item try connect later...'
+                });
+            }
             this.setState({
                 services: this.props.services,
                 snacksVeg: this.props.snacks,
@@ -66,11 +82,44 @@ class MyPartyHost extends Component {
 
 
     componentWillMount = () => {
-        this.props.actions.fetchEventDetails();
+
+        if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
+            window.location.pathname = '/SignIn';
+        }
+
     }
 
     componentDidMount = () => {
-        this.props.actions.fetchPartyDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+        this.props.actions.fetchEventDetails();
+        let [dispatch, promise] = this.props.actions.fetchPartyDetails(this.props.userinfo.email,
+            this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+
+                dispatch({
+                    type: types.GET_PARTY_DETAILS,
+                    value: response
+                });
+
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
     }
 
 
@@ -259,10 +308,43 @@ class MyPartyHost extends Component {
 
         actions.updatePartyHost(this.state.partyid, partyinfo, this.props.userinfo.sessiontoken);
 
+
     }
 
     logout = () => {
-        actions.logout(this.props.userinfo.sessiontoken);
+        let promise = actions.logout(this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                window.sessionStorage.clear();
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: 'you have been successfully logout and will be redirected to signin page'
+                }, () => {
+                    setTimeout(() => {
+                        window.location.href = "/signIn";
+                    }, 5000);
+                });
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
     }
 
     openDetails = (obj) => {
@@ -425,9 +507,38 @@ class MyPartyHost extends Component {
 
 
         let partydetails = this.props.partydetails.parties || [];
+
+        function tConvert(time) {
+            // Check correct time format and split into components
+            time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+            if (time.length > 1) { // If time format correct
+                time = time.slice(1);  // Remove full string match value
+                time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+                time[0] = +time[0] % 12 || 12; // Adjust hours
+
+                return time;
+            }
+        }
+
+
         let partycards = partydetails.map((item, i) => {
+
+
+            let date = new Date(item.date);
+            let dd = date.getDate();
+            let mm = date.getMonth() + 1;
+            let yyyy = date.getFullYear();
+            if (dd < 10) { dd = '0' + dd; }
+            if (mm < 10) { mm = '0' + mm; }
+            date = dd + '/' + mm + '/' + yyyy;
+
+
+
+            let time = tConvert(item.time);
+
             return (
-                <Row key={i}>
+                <Row key={i} className='titles-item'>
                     <Col md={{ size: 2 }}  >
                         {item.title}
                     </Col>
@@ -435,13 +546,15 @@ class MyPartyHost extends Component {
                         {item.partytype}
                     </Col>
                     <Col md={{ size: 3 }}  >
-                        {item.date}{item.time}
+                        {date} {time.join('')}
                     </Col>
                     <Col md={{ size: 2 }}  >
                         {item.status}
                     </Col>
                     <Col md={{ size: 3 }}  >
-                        <button onClick={this.openDetails.bind(this, item)}> View Details</button>
+                        <button className='btn btn-secondary' onClick={this.openDetails.bind(this, item)}>
+                            View Details
+                        </button>
                     </Col>
                 </Row>
             );
@@ -449,6 +562,11 @@ class MyPartyHost extends Component {
         if (this.state.showPenalityBox) {
 
             return (<Container fluid={true} className='details' >
+                <Alerts
+                    isOpen={this.state.alertOpen}
+                    color={this.state.alertColor}
+                    Message={this.state.alertMessage}
+                    onDismiss={this.alertClose} />
                 <p className='header-title'>Penality Details</p>
                 <button onClick={this.confirmCancel}>Confirm</button>
                 <button onClick={this.rejectCancel}>Cancel</button>
@@ -456,12 +574,37 @@ class MyPartyHost extends Component {
         }
 
         return (<Container fluid={true} className='details' >
+            <Alerts
+                isOpen={this.state.alertOpen}
+                color={this.state.alertColor}
+                Message={this.state.alertMessage}
+                onDismiss={this.alertClose} />
             <div className={this.state.showPartyEdit ? "hide" : "show"}>
                 <p className='header-title'>Party Details</p>
                 <p className='header-subtitle'>General Details</p>
-                <button onClick={this.logout}>Logout</button>
-                <a href='/HostEdit'>Edit Profile</a>
-                <a href='/PlanParty'>Plan Party</a>
+
+                <div className='action-container'>
+                    <button className='btn btn-action' onClick={this.logout}>Logout</button>
+                    <a href='/HostEdit' className='btn btn-action'>Edit Profile</a>
+                    <a href='/PlanParty' className='btn btn-action'>Plan Party</a>
+                </div>
+
+                <Row className='titles'>
+                    <Col md={{ size: 2 }}  >
+                        Party Title
+                    </Col>
+                    <Col md={{ size: 2 }}  >
+                        Party Type
+                    </Col>
+                    <Col md={{ size: 3 }}  >
+                        Party Date And Time
+                    </Col>
+                    <Col md={{ size: 2 }}  >
+                        Party Status
+                    </Col>
+                    <Col md={{ size: 3 }} />
+                </Row>
+
                 {partycards}
             </div>
             <div className={this.state.showPartyEdit ? "show" : "hide"}>
@@ -602,7 +745,8 @@ MyPartyHost.propTypes = {
     services: PropTypes.array,
     meals: PropTypes.array,
     themes: PropTypes.array,
-    partydetails: PropTypes.object
+    partydetails: PropTypes.object,
+    unabletofetchPrePartyDetails: PropTypes.bool
 };
 
 function mapStateToProps(state) {
@@ -614,7 +758,8 @@ function mapStateToProps(state) {
         services: state.event.catalogue.data.services,
         meals: state.event.catalogue.data.meals,
         themes: state.event.catalogue.data.themes,
-        partydetails: state.event.partydetails
+        partydetails: state.event.partydetails,
+        unabletofetchPrePartyDetails: state.event.catalogue.data.unabletofetchPrePartyDetails
     };
 }
 

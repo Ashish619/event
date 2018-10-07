@@ -9,7 +9,7 @@ import { Container, Row, Col, Button } from 'reactstrap';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import Stepper from 'components/Stepper';
-
+import Alerts from "components/Alerts";
 class PlanParty extends Component {
     constructor(props) {
         super(props);
@@ -20,17 +20,20 @@ class PlanParty extends Component {
             selectedTheme: null,
             services: this.props.services,
             snacksVeg: this.props.snacks,
-            meals: this.props.meals
+            meals: this.props.meals,
+            alertOpen: false,
+            alertColor: '',
+            alertMessage: ''
         };
 
         this.userinfo = {
-            firstname: "",
-            lastname: "",
-            mobile: "",
-            email: "",
-            partyVenue: "",
-            guestcount: "",
-            partytitle: ""
+            firstname: null,
+            lastname: null,
+            mobile: null,
+            email: null,
+            partyVenue: null,
+            guestcount: null,
+            partytitle: null
 
         };
         this.services = [];
@@ -39,34 +42,99 @@ class PlanParty extends Component {
 
     }
 
+    componentWillMount = () => {
 
+        if (!this.props.userinfo.hasOwnProperty('sessiontoken')) {
+            window.location.pathname = '/SignIn';
+        }
+
+    }
 
     componentDidMount = () => {
         this.props.actions.fetchEventDetails();
+        let promise = actions.getHostDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.userinfo.firstname.value = response.first_name;
+                this.userinfo.lastname.value = response.last_name;
+                this.userinfo.mobile.value = response.mobile;
+                this.userinfo.email.value = response.email;
+                this.forceUpdate();
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+    }
+
+    alertClose = () => {
+        this.setState({ alertOpen: false });
     }
 
     componentDidUpdate(prevProps) {
 
 
         if (this.props.loaded !== prevProps.loaded) {
+            if (this.props.unabletofetchPrePartyDetails == true) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: 'Some Network issue in fetching list of item try connect later...'
+                });
+            }
+
             this.setState({
                 services: this.props.services,
                 snacksVeg: this.props.snacks,
                 meals: this.props.meals
-            }, () => { this.forceUpdate(); });
+            }, () => {
+                let promise = actions.getHostDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+
+                promise.then(function (response) {
+                    return response.json();
+                }).then(response => {
+
+                    if (response.hasOwnProperty('status') && response.status == false) {
+                        this.setState({
+                            alertOpen: true,
+                            alertColor: 'warning',
+                            alertMessage: response.message
+                        });
+                    }
+                    else {
+                        this.userinfo.firstname.value = response.first_name;
+                        this.userinfo.lastname.value = response.last_name;
+                        this.userinfo.mobile.value = response.mobile;
+                        this.userinfo.email.value = response.email;
+                        this.forceUpdate();
+                    }
+                }).catch(error => {
+                    this.setState({
+                        alertOpen: true,
+                        alertColor: 'warning',
+                        alertMessage: 'Network Issue'
+                    });
+                });
+
+
+            });
         }
 
-        actions.getHostDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken)
-            .then(res => res.json())
-            .then(
-                res => {
-                    this.userinfo.firstname.value = res.first_name;
-                    this.userinfo.lastname.value = res.last_name;
-                    this.userinfo.mobile.value = res.mobile;
-                    this.userinfo.email.value = res.email;
 
-                }
-            );
 
     }
 
@@ -97,7 +165,38 @@ class PlanParty extends Component {
         window.location.href = "/MyPartyHost";
     }
 
+
+    restrictNum = (event) => {
+
+        if (/\D/.test(event.target.value)) {
+            event.target.value = event.target.value.replace(/\D/g, "");
+        }
+    }
     submitRequest = () => {
+
+        if (this.userinfo.firstname.value == "" ||
+            this.state.selectedCity == null ||
+            this.userinfo.lastname.value == "" ||
+            this.userinfo.mobile.value == "" ||
+            this.userinfo.email.value == "" ||
+            this.userinfo.partytitle.value == "" ||
+            this.userinfo.guestcount.value == "" ||
+            this.userinfo.partyVenue.value == "" ||
+
+            this.state.selectedTheme.theme_id <= 0 ||
+            this.state.startDate == null ||
+            this.state.startTime == null
+        ) {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'please fill general details'
+            });
+            return;
+        }
+
+
+
         var removeDups = (list) => {
             var uniq = new Set(list.map(e => JSON.stringify(e)));
             return Array.from(uniq).map(e => JSON.parse(e));
@@ -141,7 +240,6 @@ class PlanParty extends Component {
         if (mm < 10) { mm = '0' + mm; }
         date = yyyy + '-' + mm + '-' + dd;
 
-
         let partyinfo = {
             "host_first_name": this.userinfo.firstname.value,
             "host_last_name": this.userinfo.lastname.value,
@@ -163,7 +261,43 @@ class PlanParty extends Component {
         };
 
 
-        actions.planPartyHost(partyinfo, this.props.userinfo.sessiontoken);
+        let promise = actions.planPartyHost(partyinfo, this.props.userinfo.sessiontoken);
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: 'you have been successfully created party' +
+                        'and will be redirected to party page'
+                }, () => {
+                    setTimeout(() => {
+                        window.location.href = "/MyPartyHost";
+                    }, 5000);
+                });
+
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
+
+
 
     }
 
@@ -181,11 +315,16 @@ class PlanParty extends Component {
 
         let serviceCard = this.state.services.map((item, i) => {
             return (<Col md={{ size: 4 }} key={i} >
-                <label className='control control--checkbox'>
-                    {item.desc}
-                    <input type='checkbox' ref={el => this.services.push({ id: item.id, el: el })} />
-                    <div className='control__indicator' />
-                </label>
+                <div className='item-list'>
+                    <img src={'assets/images/' + item.image} />
+                    <div className='ctrl'>
+                        <label className='control control--checkbox'>
+                            {item.desc}
+                            <input type='checkbox' ref={el => this.services.push({ id: item.id, el: el })} />
+                            <div className='control__indicator' />
+                        </label>
+                    </div>
+                </div>
                     </Col>);
         });
 
@@ -195,7 +334,7 @@ class PlanParty extends Component {
 
                 <Col md={{ size: 4 }} key={i} >
                     <div className='item-list'>
-                        <img src='assets/images/item.jpg' />
+                        <img src={'assets/images/' + item.image} />
                         <div className='ctrl'>
                             <label className='control control--checkbox'>
                                 {item.desc}
@@ -222,7 +361,7 @@ class PlanParty extends Component {
             return (
                 <Col md={{ size: 4 }} key={i} >
                     <div className='item-list'>
-                        <img src='assets/images/item.jpg' />
+                        <img src={'assets/images/' + item.image} />
                         <div className='ctrl'>
                             <label className='control control--checkbox'>
                                 {item.desc}
@@ -248,7 +387,19 @@ class PlanParty extends Component {
         return (
             this.props.loaded ?
                 <Container fluid={true} className='details' >
+                    <Alerts
+                        isOpen={this.state.alertOpen}
+                        color={this.state.alertColor}
+                        Message={this.state.alertMessage}
+                        onDismiss={this.alertClose} />
+
                     <p className='header-title'>Party Details</p>
+                    <div className='action-container' >
+                        <button className='btn btn-action'
+                            style={{ float: 'left' }} onClick={this.cancelRequest}>Back
+                        </button>
+                    </div>
+
                     <p className='header-subtitle'>General Details</p>
                     <div className='details-content'>
                         <Row>
@@ -256,7 +407,8 @@ class PlanParty extends Component {
                                 <input ref={el =>
                                     this.userinfo.firstname = el} className='input-text' placeholder='First Name' />
                                 <input ref={el =>
-                                    this.userinfo.mobile = el} className='input-text' placeholder='Phone Number' />
+                                    this.userinfo.mobile = el}
+                                    onChange={this.restrictNum} className='input-text' placeholder='Phone Number' />
                             </Col>
                             <Col md={{ size: 4 }} >
                                 <input ref={el =>
@@ -303,7 +455,8 @@ class PlanParty extends Component {
                             </Col>
                             <Col md={{ size: 4 }} >
                                 <input ref={el =>
-                                    this.userinfo.guestcount = el} className='input-text' placeholder='Guest Count' />
+                                    this.userinfo.guestcount = el}
+                                    onChange={this.restrictNum} className='input-text' placeholder='Guest Count' />
                                 <div className='select'>
                                     <Select
                                         value={selectedCity}
@@ -320,7 +473,7 @@ class PlanParty extends Component {
                             this.userinfo.partytitle = el} className='input-text' placeholder='Party Title' />
                     </div>
                     <p className='header-subtitle'>Services Required</p>
-                    <div className='service-details'>
+                    <div className='snackveg-details'>
                         <Row >
                             {serviceCard}
                         </Row>
@@ -358,6 +511,7 @@ PlanParty.propTypes = {
     services: PropTypes.array,
     meals: PropTypes.array,
     themes: PropTypes.array,
+    unabletofetchPrePartyDetails: PropTypes.bool
 };
 
 function mapStateToProps(state) {
@@ -369,6 +523,7 @@ function mapStateToProps(state) {
         services: state.event.catalogue.data.services,
         meals: state.event.catalogue.data.meals,
         themes: state.event.catalogue.data.themes,
+        unabletofetchPrePartyDetails: state.event.catalogue.data.unabletofetchPrePartyDetails
     };
 }
 

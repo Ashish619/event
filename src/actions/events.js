@@ -137,7 +137,7 @@ export function registerHostDetails(userinfo) {
         headers: openHeader(),
         body: JSON.stringify(userinfo)
     });
-     
+
 
 }
 
@@ -166,13 +166,8 @@ export function planPartyHost(userinfo, sessiontoken) {
         headers: { ...headers(), sessiontoken },
         credentials: 'include',
         body: JSON.stringify(userinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).then(res => {
-            window.location.href = "/MyPartyHost";
-        }
-        ).catch(error => { console.log(error); });
+    });
+
 
 }
 
@@ -221,7 +216,7 @@ export function updateHostDetails(userinfo, sessiontoken, email) {
         credentials: 'include',
         body: JSON.stringify(userinfo)
     });
-       
+
 
 }
 
