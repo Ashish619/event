@@ -7,12 +7,19 @@ class Stepper extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: this.props.defaultValue ||'' ,
+            value: this.props.defaultValue,
         };
     }
+
+
     handleChange = (e) => {
         if (this.props.isDisabledEl.checked) {
-            this.setState({ value: e.target.value });
+            let text = e.target.value;
+            if (/\D/.test(text)) {
+                text = text.replace(/\D/g, "");
+            }
+
+            this.setState({ value: text });
         }
     }
 
@@ -20,7 +27,7 @@ class Stepper extends Component {
 
         return (
             <input
-                value={ this.state.value}
+                value={this.state.value}
                 placeholder={this.props.placeholder}
                 className='text-charges'
                 onChange={this.handleChange}
@@ -34,7 +41,7 @@ Stepper.propTypes = {
     isDisabledEl: PropTypes.any,
     setref: PropTypes.func,
     placeholder: PropTypes.string,
-    defaultValue : PropTypes.any
+    defaultValue: PropTypes.any
 
 };
 

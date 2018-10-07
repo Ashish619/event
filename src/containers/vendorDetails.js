@@ -7,7 +7,7 @@ import { withRouter } from "react-router";
 import * as actions from "actions/events";
 import { Container, Row, Col, Button } from 'reactstrap';
 import Select from 'react-select';
-
+import Alerts from "components/Alerts";
 import Charges from 'components/Charges';
 
 class vendorDetails extends Component {
@@ -29,7 +29,10 @@ class vendorDetails extends Component {
             secondaryphone: "",
             email: "",
             message: "",
-            lastpartydate: ""
+            lastpartydate: "",
+            alertOpen: false,
+            alertColor: '',
+            alertMessage: ''
 
         };
         this.services = [];
@@ -37,9 +40,22 @@ class vendorDetails extends Component {
         this.meals = [];
     }
 
+    restrictNum = (event) => {
+
+        if (/\D/.test(event.target.value)) {
+            event.target.value = event.target.value.replace(/\D/g, "");
+        }
+    }
 
     handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+        let text = event.target.value;
+        if (event.target.name == 'primaryphone' || event.target.name == 'secondaryphone') {
+
+            if (/\D/.test(text)) {
+                text = text.replace(/\D/g, "");
+            }
+        }
+        this.setState({ [event.target.name]: text });
     }
 
     componentDidMount = () => {
@@ -49,16 +65,28 @@ class vendorDetails extends Component {
     componentDidUpdate(prevProps) {
 
         if (this.props.loaded !== prevProps.loaded) {
+            if (this.props.unabletofetchPrePartyDetails !== prevProps.unabletofetchPrePartyDetails) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: 'Some Network issue in fetching list of item try connect later...'
+                });
+            }
             this.setState({
                 services: this.props.services,
                 snacksVeg: this.props.snacks,
                 meals: this.props.meals
             }, () => { this.forceUpdate(); });
         }
+
+
     }
 
     handleChangeCity = (selectedCity) => {
         this.setState({ selectedCity });
+    }
+    alertClose = () => {
+        this.setState({ alertOpen: false });
     }
 
     submitRequest = () => {
@@ -84,9 +112,29 @@ class vendorDetails extends Component {
             }));
 
 
+        if (this.state.mgrfirstname == "" ||
+            this.state.mgrlastname == "" ||
+            this.state.coname == "" ||
+            this.state.coaddress == "" ||
+            this.state.officecity == "" ||
+            this.state.officestate == "" ||
 
-        actions.registerVendorDetails({
+            this.state.primaryphone == "" ||
 
+            this.state.email == "" ||
+            this.state.message == ""
+        ) {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'please fill general details'
+            });
+
+        }
+
+
+
+        let promise = actions.registerVendorDetails({
             mgrfirstname: this.state.mgrfirstname,
             mgrlastname: this.state.mgrlastname,
             coname: this.state.coname,
@@ -104,6 +152,41 @@ class vendorDetails extends Component {
             meals: selectedmeals
 
         });
+
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: 'you have been successfully registered and will be redirected to signin page'
+                }, () => {
+                    setTimeout(() => {
+                        window.location.href = "signIn";
+                    }, 5000);
+                });
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
+
+
+
     }
 
     render() {
@@ -116,20 +199,25 @@ class vendorDetails extends Component {
 
             };
             let serviceCard = this.state.services.map((item, i) => {
-                return (<Col md={{ size: 3 }} key={i} >
-                    <label className='control control--checkbox'>
-                        {item.desc}
-                        <input type='checkbox' ref={el => this.services.push({ id: item.id, el: el })} />
-                        <div className='control__indicator' />
-                    </label>
-                    {this.services[i] && this.services[i].el && (
-                        <div className='stepperCont vendor'>
-                            <Charges
-                                placeholder='Charges'
-                                isDisabledEl={this.services[i].el}
-                                setref={(ref) => { this.services[i]["inputValue"] = ref; }}
-                            />
-                        </div>)}
+                return (<Col md={{ size: 4 }} key={i} >
+                    <div className='item-list'>
+                        <img src={'assets/images/' + item.image} />
+                        <div className='ctrl'>
+                            <label className='control control--checkbox'>
+                                {item.desc}
+                                <input type='checkbox' ref={el => this.services.push({ id: item.id, el: el })} />
+                                <div className='control__indicator' />
+                            </label>
+                            {this.services[i] && this.services[i].el && (
+                                <div className='stepperCont vendor'>
+                                    <Charges
+                                        placeholder='Charges'
+                                        isDisabledEl={this.services[i].el}
+                                        setref={(ref) => { this.services[i]["inputValue"] = ref; }}
+                                    />
+                                </div>)}
+                        </div>
+                    </div>
                         </Col>);
             });
 
@@ -137,7 +225,7 @@ class vendorDetails extends Component {
                 return (
                     <Col md={{ size: 4 }} key={i} >
                         <div className='item-list'>
-                            <img src='assets/images/item.jpg' />
+                            <img src={'assets/images/' + item.image} />
                             <div className='ctrl'>
                                 <label className='control control--checkbox'>
                                     {item.desc}
@@ -162,7 +250,7 @@ class vendorDetails extends Component {
                 return (
                     <Col md={{ size: 4 }} key={i} >
                         <div className='item-list'>
-                            <img src='assets/images/item.jpg' />
+                            <img src={'assets/images/' + item.image} />
                             <div className='ctrl'>
                                 <label className='control control--checkbox'>
                                     {item.desc}
@@ -189,6 +277,11 @@ class vendorDetails extends Component {
             return (
 
                 <Container fluid={true} className='details' >
+                    <Alerts
+                        isOpen={this.state.alertOpen}
+                        color={this.state.alertColor}
+                        Message={this.state.alertMessage}
+                        onDismiss={this.alertClose} />
                     <p className='header-title'>Vendor Details</p>
                     <p className='header-subtitle'>General Details</p>
                     <div className='details-content'>
@@ -221,13 +314,15 @@ class vendorDetails extends Component {
                                     onChange={this.handleChange} />
                             </Col>
                             <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Phone Number(Main/Primary)'
+                                <input className='input-text'
+                                    placeholder='Phone Number(Main/Primary)'
                                     name='primaryphone'
                                     value={this.state.primaryphone}
                                     onChange={this.handleChange} />
                             </Col>
                             <Col md={{ size: 4 }} >
-                                <input className='input-text' placeholder='Phone Number(Alernate)'
+                                <input className='input-text'
+                                    placeholder='Phone Number(Alernate)'
                                     name='secondaryphone'
                                     value={this.state.secondaryphone}
                                     onChange={this.handleChange} />
@@ -269,7 +364,7 @@ class vendorDetails extends Component {
                             value={this.state.message} />
                     </div>
                     <p className='header-subtitle'>Services Offered : Charges</p>
-                    <div className='service-details vendor'>
+                    <div className='snackveg-details'>
                         <Row >
                             {serviceCard}
                         </Row>
@@ -308,10 +403,12 @@ vendorDetails.propTypes = {
     services: PropTypes.array,
     meals: PropTypes.array,
     themes: PropTypes.array,
+    unabletofetchPrePartyDetails: PropTypes.bool,
 };
 
 function mapStateToProps(state) {
     return {
+        unabletofetchPrePartyDetails: state.event.catalogue.data.unabletofetchPrePartyDetails,
         loaded: state.event.catalogue.data.loaded,
         snacks: state.event.catalogue.data.snacks,
         cities: state.event.catalogue.data.cities,

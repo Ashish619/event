@@ -64,14 +64,11 @@ export function resetPassword(mail) {
 export function logout(sessiontoken) {
 
     const logoutUrl = getLogout();
-    fetch(logoutUrl, {
+    return fetch(logoutUrl, {
         method: 'POST',
         headers: { ...headers(), sessiontoken },
         credentials: 'include',
-    }).then(function (response) {
-        return response.json();
-    }).then(res => { window.sessionStorage.clear(); window.location.href = "/signIn"; })
-        .catch(error => { console.log(error); });
+    });
 }
 
 
@@ -79,18 +76,11 @@ export function logout(sessiontoken) {
 export function fetchPartyDetails(email, sessiontoken) {
     return function (dispatch) {
         const partyUrl = getPartyDetails(email);
-        fetch(partyUrl, {
+        return [dispatch, fetch(partyUrl, {
             method: 'GET',
             headers: { ...headers(), sessiontoken },
             credentials: 'include'
-        }).then(function (response) {
-            return response.json();
-        }).then(response => {
-            dispatch({
-                type: types.GET_PARTY_DETAILS,
-                value: response
-            });
-        }).catch(error => { console.log(error); });
+        })];
     };
 }
 
@@ -129,14 +119,14 @@ export function getHostDetails(vemail, sessiontoken) {
 
 export function registerVendorDetails(vendorinfo) {
     const registerVendorUrl = registerVendor();
+
+
     return fetch(registerVendorUrl, {
         method: 'POST',
         headers: openHeader(),
         body: JSON.stringify(vendorinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).catch(error => { console.log(error); });
+    });
+
 
 }
 
@@ -163,10 +153,8 @@ export function updateVendorDetails(vendorinfo, sessiontoken, email) {
         headers: { ...headers(), sessiontoken },
         credentials: 'include',
         body: JSON.stringify(vendorinfo)
-    })
-        .then(function (response) {
-            return response.json();
-        }).then(res => { window.location.href = "/MyPartyVendor"; }).catch(error => { console.log(error); });
+    });
+
 
 }
 
@@ -309,6 +297,23 @@ export function fetchEventDetails() {
                 return response.json();
             })
         ]).then(values => {
+            let unabletofetchPrePartyDetails = false;
+            if (values[0].hasOwnProperty('status') && values[0].status == false) {
+                unabletofetchPrePartyDetails = true;
+            }
+            if (values[1].hasOwnProperty('status') && values[1].status == false) {
+                unabletofetchPrePartyDetails = true;
+            }
+            if (values[2].hasOwnProperty('status') && values[2].status == false) {
+                unabletofetchPrePartyDetails = true;
+            }
+            if (values[3].hasOwnProperty('status') && values[3].status == false) {
+                unabletofetchPrePartyDetails = true;
+            }
+            if (values[4].hasOwnProperty('status') && values[4].status == false) {
+                unabletofetchPrePartyDetails = true;
+            }
+
             dispatch({
                 type: types.GET_EVENT_DETAILS,
                 value: {
@@ -316,10 +321,23 @@ export function fetchEventDetails() {
                     services: values[1],
                     snacks: values[2],
                     meals: values[3],
-                    themes: values[4].map(item => ({ ...item, value: item.theme, label: item.theme, }))
+                    themes: values[4].map(item => ({ ...item, value: item.theme, label: item.theme, })),
+                    unabletofetchPrePartyDetails: unabletofetchPrePartyDetails
                 }
             });
-        }).catch(error => { console.log(error); });
+        }).catch(error => {
+            dispatch({
+                type: types.GET_EVENT_DETAILS,
+                value: {
+                    cities: [],
+                    services: [],
+                    snacks: [],
+                    meals: [],
+                    themes: [],
+                    unabletofetchPrePartyDetails: true
+                }
+            });
+        });
     };
 }
 

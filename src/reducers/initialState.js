@@ -11,7 +11,8 @@ export default {
         services: [],
         meals: [],
         themes: [],
-        loaded: false
+        loaded: false,
+        unabletofetchPrePartyDetails : false
       }
     }
   }

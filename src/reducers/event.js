@@ -26,7 +26,8 @@ export default function event(state = initialState.event, action) {
             snacks: action.value.snacks,
             meals: action.value.meals,
             themes: action.value.themes,
-            loaded: true
+            loaded: true,
+            unabletofetchPrePartyDetails : action.value.unabletofetchPrePartyDetails
           }
         }
       });

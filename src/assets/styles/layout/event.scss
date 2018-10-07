@@ -192,6 +192,13 @@ p {
     }
 }
 
+.btn {
+    &.btn-action {
+        background-color: #007bff !important;
+        color: #fff !important;
+    }
+}
+
 .datepicker {
     .react-datepicker-wrapper,
     .react-datepicker__input-container {

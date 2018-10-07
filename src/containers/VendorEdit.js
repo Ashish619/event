@@ -7,7 +7,7 @@ import { withRouter } from "react-router";
 import * as actions from "actions/events";
 import { Container, Row, Col, Button } from 'reactstrap';
 import Select from 'react-select';
-
+import Alerts from "components/Alerts";
 import Charges from 'components/Charges';
 
 class VendorEdit extends Component {
@@ -19,10 +19,14 @@ class VendorEdit extends Component {
             snacksVeg: this.props.snacks,
             meals: this.props.meals,
             officecity: "",
-             lastpartydate: "",
+            lastpartydate: "",
             vendor: {},
             selectedCityDefault: null,
-            showVendorEdit: false
+            showVendorEdit: false,
+            alertOpen: false,
+            alertColor: '',
+            alertMessage: '',
+            inputTouched: false
 
         };
 
@@ -31,19 +35,28 @@ class VendorEdit extends Component {
         this.meals = [];
 
         this.userinfo = {
-            primaryphone: "",
-            secondaryphone: "",
-            email: "",
-            message: "",
-            officestate: "",
-            mgrfirstname: "",
-            mgrlastname: "",
-            coname: "",
-            coaddress: "",
+            primaryphone: null,
+            secondaryphone: null,
+            email: null,
+            message: null,
+            officestate: null,
+            mgrfirstname: null,
+            mgrlastname: null,
+            coname: null,
+            coaddress: null,
         };
 
     }
 
+    restrictNum = (event) => {
+
+        if (/\D/.test(event.target.value)) {
+            event.target.value = event.target.value.replace(/\D/g, "");
+        }
+    }
+    alertClose = () => {
+        this.setState({ alertOpen: false });
+    }
 
     handleChange = (event) => {
         this.setState({ [event.target.name]: event.target.value });
@@ -52,26 +65,74 @@ class VendorEdit extends Component {
     componentDidMount = () => {
         actions.resetEmployee();
         this.props.actions.fetchEventDetails();
-        actions.getVendorDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken).
-            then(res => res.json()).then(res => {
-                this.setState({ vendor: res },
-                    () => { this.updateUser(res); });
+
+        let promise = actions.getVendorDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.setState({ vendor: response },
+                    () => { this.updateUser(response); this.forceUpdate(); });
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
             });
+        });
+
     }
 
     componentDidUpdate(prevProps) {
 
         if (this.props.loaded !== prevProps.loaded) {
+            if (this.props.unabletofetchPrePartyDetails !== prevProps.unabletofetchPrePartyDetails) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: 'Some Network issue in fetching list of item try connect later...'
+                });
+            }
+
             this.setState({
                 services: this.props.services,
                 snacksVeg: this.props.snacks,
                 meals: this.props.meals
             }, () => {
-                actions.getVendorDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken).
-                    then(res => res.json()).then(res => {
-                        this.setState({ vendor: res },
-                            () => { this.updateUser(res); });
-                    }); this.forceUpdate();
+                let promise = actions.getVendorDetails(this.props.userinfo.email, this.props.userinfo.sessiontoken);
+                promise.then(function (response) {
+                    return response.json();
+                }).then(response => {
+
+                    if (response.hasOwnProperty('status') && response.status == false) {
+                        this.setState({
+                            alertOpen: true,
+                            alertColor: 'warning',
+                            alertMessage: response.message
+                        });
+                    }
+                    else {
+                        this.setState({ vendor: response },
+                            () => { this.updateUser(response); this.forceUpdate(); });
+                    }
+                }).catch(error => {
+                    this.setState({
+                        alertOpen: true,
+                        alertColor: 'warning',
+                        alertMessage: 'Network Issue'
+                    });
+                });
+
+
             });
         }
     }
@@ -81,20 +142,20 @@ class VendorEdit extends Component {
     }
 
     serviceDefault = (param, item) => {
+        let res = this.state.vendor;
         let defaultValue = '';
-        if (this.state.vendor.hasOwnProperty(param)) {
-            this.state.vendor[param].forEach(element => {
-                if (element.service == item.id) {
-                    defaultValue = element.price;
-                }
-            });
+        if (res.hasOwnProperty(param)) {
+            defaultValue = res[param].filter(element =>
+                element.service == item.id
+            )[0].price;
+            return defaultValue;
         }
-        return defaultValue;
+
     }
 
 
     setChecked = (item, param, el) => {
-        if (el) {
+        if (el && !this.state.inputTouched) {
             let defaultValue = false;
             if (this.state.vendor.hasOwnProperty(param)) {
                 this.state.vendor[param].forEach(element => {
@@ -108,8 +169,12 @@ class VendorEdit extends Component {
         }
 
     }
+
+    settouched = () => {
+        this.setState({ inputTouched: true });
+    }
     updateUser = (res) => {
-        let vendor = { ...this.state.vendor };
+        let vendor = res;
         let city_idobj;
         for (let k = 0; k < this.props.cities.length; k++) {
             if (this.props.cities[k].city_id == vendor.officecity) {
@@ -129,11 +194,16 @@ class VendorEdit extends Component {
         this.userinfo.coaddress.value = vendor.coaddress;
 
 
+
+
         this.setState({
             selectedCityDefault: city_idobj,
             selectedCity: this.props.cities[city_idobj],
             showVendorEdit: true
-        }, () => { this.forceUpdate(); });
+        });
+
+
+
     }
 
     cancelRequest = () => {
@@ -164,10 +234,26 @@ class VendorEdit extends Component {
 
 
 
+        if (this.userinfo.mgrfirstname.value == "" ||
+
+            this.userinfo.coname.value == "" ||
+            this.userinfo.mgrlastname.value == "" ||
+            this.userinfo.coaddress.value == "" ||
+            this.userinfo.officestate.value == "" ||
+            this.userinfo.primaryphone.value == "" ||
+            this.userinfo.email.value == "" ||
+            this.userinfo.message.value == ""
+        ) {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'please fill general details'
+            });
+            return;
+        }
 
 
-
-        actions.updateVendorDetails({
+        let promise = actions.updateVendorDetails({
             mgrfirstname: this.userinfo.mgrfirstname.value,
             mgrlastname: this.userinfo.mgrlastname.value,
             coname: this.userinfo.coname.value,
@@ -185,39 +271,81 @@ class VendorEdit extends Component {
             meals: selectedmeals
 
         }, this.props.userinfo.sessiontoken, this.props.userinfo.email);
+
+
+        promise.then(function (response) {
+            return response.json();
+        }).then(response => {
+
+            if (response.hasOwnProperty('status') && response.status == false) {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'warning',
+                    alertMessage: response.message
+                });
+            }
+            else {
+                this.setState({
+                    alertOpen: true,
+                    alertColor: 'success',
+                    alertMessage: 'you details have been  updated successfully now you ' +
+                        'will be redirected back to party page'
+                }, () => {
+                    setTimeout(() => {
+                        window.location.href = "/MyPartyVendor";
+                    }, 5000);
+                });
+            }
+        }).catch(error => {
+            this.setState({
+                alertOpen: true,
+                alertColor: 'warning',
+                alertMessage: 'Network Issue'
+            });
+        });
+
+
+
     }
 
     render() {
 
 
-        if (this.props.loaded) {
+        if (this.props.loaded && Object.keys(this.state.vendor).length > 0) {
 
             const colourStyles = {
                 control: styles => ({ ...styles, backgroundColor: 'white', borderColor: '#b30274' }),
                 placeholder: styles => ({ ...styles, color: ' #b2b2b2' }),
 
             };
+
+
             let serviceCard = this.state.services.map((item, i) => {
                 return (<Col md={{ size: 3 }} key={i} >
-                    <label className='control control--checkbox'>
-                        {item.desc}
-                        <input type='checkbox' ref={el => {
-                            this.setChecked(item, "services", el);
-                            this.services.push({ id: item.id, el: el });
-                        }} />
-                        <div className='control__indicator' />
-                    </label>
-                    {this.services[i] && this.services[i].el && (
-                        <div className='stepperCont vendor'>
-                            <Charges
-                                placeholder='Charges'
-                                isDisabledEl={this.services[i].el}
-                                setref={(ref) => { this.services[i]["inputValue"] = ref; }}
-                                defaultValue={
-                                    this.serviceDefault('services', item)
-                                }
-                            />
-                        </div>)}
+                    <div className='item-list'>
+                        <img src={'assets/images/' + item.image} />
+                        <div className='ctrl'>
+                            <label className='control control--checkbox'>
+                                {item.desc}
+                                <input type='checkbox' onChange={this.settouched} ref={el => {
+                                    this.setChecked(item, "services", el);
+                                    this.services.push({ id: item.id, el: el });
+                                }} />
+                                <div className='control__indicator' />
+                            </label>
+                            {this.services[i] && this.services[i].el && (
+                                <div className='stepperCont vendor'>
+                                    <Charges
+                                        placeholder='Charges'
+                                        isDisabledEl={this.services[i].el}
+                                        setref={(ref) => { this.services[i]["inputValue"] = ref; }}
+                                        defaultValue={
+                                            this.serviceDefault('services', item)
+                                        }
+                                    />
+                                </div>)}
+                        </div>
+                    </div>
                         </Col>);
             });
 
@@ -226,11 +354,11 @@ class VendorEdit extends Component {
                 return (
                     <Col md={{ size: 4 }} key={i} >
                         <div className='item-list'>
-                            <img src='assets/images/item.jpg' />
+                            <img src={'assets/images/' + item.image} />
                             <div className='ctrl'>
                                 <label className='control control--checkbox'>
                                     {item.desc}
-                                    <input type='checkbox' ref={el => {
+                                    <input type='checkbox' onChange={this.settouched} ref={el => {
                                         this.setChecked(item, "snacks", el);
                                         this.snacksVeg.push({ id: item.id, el: el });
                                     }} />
@@ -257,11 +385,11 @@ class VendorEdit extends Component {
                 return (
                     <Col md={{ size: 4 }} key={i} >
                         <div className='item-list'>
-                            <img src='assets/images/item.jpg' />
+                            <img src={'assets/images/' + item.image} />
                             <div className='ctrl'>
                                 <label className='control control--checkbox'>
                                     {item.desc}
-                                    <input type='checkbox' ref={el => {
+                                    <input type='checkbox' onChange={this.settouched} ref={el => {
                                         this.setChecked(item, "meals", el);
                                         this.meals.push({ id: item.id, el: el });
                                     }} />
@@ -291,9 +419,21 @@ class VendorEdit extends Component {
 
             return (
                 <Container fluid={true} className='details' >
+                    <Alerts
+                        isOpen={this.state.alertOpen}
+                        color={this.state.alertColor}
+                        Message={this.state.alertMessage}
+                        onDismiss={this.alertClose} />
                     <div>
                         <p className='header-title'>Edit Vendor Details</p>
                         <p className='header-subtitle'>General Details</p>
+                        <div className='action-container' >
+                            <button className='btn btn-action'
+                                style={{ float: 'left' }} onClick={this.cancelRequest}>Back
+                            </button>
+                        </div>
+
+
                         <div className='details-content'>
 
                             <Row>
@@ -319,13 +459,15 @@ class VendorEdit extends Component {
                                         ref={el => this.userinfo.email = el} />
                                 </Col>
                                 <Col md={{ size: 4 }} >
-                                    <input className='input-text' placeholder='Phone Number(Main/Primary)'
+                                    <input className='input-text' onChange={this.restrictNum}
+                                        placeholder='Phone Number(Main/Primary)'
 
                                         ref={el => this.userinfo.primaryphone = el}
                                     />
                                 </Col>
                                 <Col md={{ size: 4 }} >
-                                    <input className='input-text' placeholder='Phone Number(Alernate)'
+                                    <input className='input-text' onChange={this.restrictNum}
+                                        placeholder='Phone Number(Alernate)'
                                         ref={el => this.userinfo.secondaryphone = el}
                                     />
                                 </Col>
@@ -365,7 +507,7 @@ class VendorEdit extends Component {
                             />
                         </div>
                         <p className='header-subtitle'>Services Offered : Charges</p>
-                        <div className='service-details vendor'>
+                        <div className='snackveg-details'>
                             <Row >
                                 {serviceCard}
                             </Row>
@@ -410,6 +552,7 @@ VendorEdit.propTypes = {
     meals: PropTypes.array,
     themes: PropTypes.array,
     userinfo: PropTypes.object,
+    unabletofetchPrePartyDetails: PropTypes.bool
 };
 
 function mapStateToProps(state) {
@@ -421,6 +564,7 @@ function mapStateToProps(state) {
         meals: state.event.catalogue.data.meals,
         themes: state.event.catalogue.data.themes,
         userinfo: state.event.userinfo,
+        unabletofetchPrePartyDetails: state.event.catalogue.data.unabletofetchPrePartyDetails
     };
 }
 
