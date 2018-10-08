@@ -129,7 +129,7 @@ class vendorDetails extends Component {
                 alertColor: 'warning',
                 alertMessage: 'please fill general details'
             });
-
+            return;
         }
 
 
