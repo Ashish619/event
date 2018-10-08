@@ -509,7 +509,7 @@ class MyPartyHost extends Component {
     }
 
     rejectCancel = () => {
-        this.setState({ showPenalityBox: false }, ()=> {this.updateParty();});
+        this.setState({ showPenalityBox: false }, () => { this.updateParty(); });
     }
     closeView = () => {
         let [dispatch, promise] = this.props.actions.fetchPartyDetails(this.props.userinfo.email,
@@ -754,8 +754,54 @@ class MyPartyHost extends Component {
                     Message={this.state.alertMessage}
                     onDismiss={this.alertClose} />
                 <p className='header-title'>Penality Details</p>
-                <button onClick={this.confirmCancel}>Confirm</button>
-                <button onClick={this.rejectCancel}>Cancel</button>
+                <table border='1'>
+                    <thead>
+                        <tr>
+                            <th colSpan='2'>Cancellation terms and conditions</th>
+                        </tr>
+                        <tr>
+                            <th>Time before party schedule</th>
+                            <th>% Cut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10 days</td>
+                            <td>10% of the total cost</td>
+                        </tr>
+                        <tr>
+                            <td>5 days</td>
+                            <td>20% of the total cost</td>
+                        </tr>
+                        <tr>
+                            <td>48 hours</td>
+                            <td>30% of the total cost</td>
+                        </tr>
+                        <tr>
+                            <td>24 hours</td>
+                            <td>50% of the total cost</td>
+                        </tr>
+                        <tr>
+                            <td>Less than 24 hours</td>
+                            <td>No Refund</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colSpan='2' align='right'>
+                                <a href='http://www.wahparty.com' rel='noopener noreferrer'
+                                    target='_blank'>Terms & Conditions
+                                </a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button className='btn btn-action' onClick={this.confirmCancel}
+                    style={{ margin: '10px' }}>Confirm
+                </button>
+                <button className='btn btn-action' onClick={this.rejectCancel}
+                    style={{ margin: '10px' }}>Cancel
+                </button>
                     </Container>);
         }
 
