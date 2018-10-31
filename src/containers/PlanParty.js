@@ -394,11 +394,7 @@ class PlanParty extends Component {
                         onDismiss={this.alertClose} />
 
                     <p className='header-title'>Party Details</p>
-                    <div className='action-container' >
-                        <button className='btn btn-action'
-                            style={{ float: 'left' }} onClick={this.cancelRequest}>Back
-                        </button>
-                    </div>
+             
 
                     <p className='header-subtitle'>General Details</p>
                     <div className='details-content'>

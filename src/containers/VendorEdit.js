@@ -336,7 +336,7 @@ class VendorEdit extends Component {
 
 
             let serviceCard = this.state.services.map((item, i) => {
-                return (<Col md={{ size: 3 }} key={i} >
+                return (<Col md={{ size: 4 }} key={i} >
                     <div className='item-list'>
                         <img src={'assets/images/' + item.image} />
                         <div className='ctrl'>
@@ -442,11 +442,7 @@ class VendorEdit extends Component {
                     <div>
                         <p className='header-title'>Edit Vendor Details</p>
                         <p className='header-subtitle'>General Details</p>
-                        <div className='action-container' >
-                            <button className='btn btn-action'
-                                style={{ float: 'left' }} onClick={this.cancelRequest}>Back
-                            </button>
-                        </div>
+                     
 
 
                         <div className='details-content'>
