@@ -36,6 +36,7 @@
     "jest": "20.0.4",
     "jest-fetch-mock": "^1.5.0",
     "moment": "^2.22.2",
+    "nuka-carousel": "^4.4.2",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",

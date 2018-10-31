@@ -62,6 +62,10 @@ class vendorDetails extends Component {
         this.props.actions.fetchEventDetails();
     }
 
+    cancelRequest = () => {
+        window.location.href = "/";
+    }
+
     componentDidUpdate(prevProps) {
 
         if (this.props.loaded !== prevProps.loaded) {
@@ -385,6 +389,7 @@ class vendorDetails extends Component {
 
                     <div className='next-blk'>
                         <Button onClick={this.submitRequest}>Save</Button>
+                        <Button onClick={this.cancelRequest} style={{ margin: '0 0 0 20px' }}>Cancel</Button>
                     </div>
                 </Container>
 

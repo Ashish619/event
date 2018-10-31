@@ -842,44 +842,10 @@ class MyPartyHost extends Component {
             <div className={this.state.showPartyEdit ? "show" : "hide"}>
                 <p className='header-title'>Party Details</p>
                 <div className='action-container'>
-                    <button className='btn btn-action'
-                        style={{ float: 'left' }} onClick={this.closeView}>Back
-                    </button>
-                    <span style={{ float: 'right' }}> Status : {this.state.currentParty.status}</span>
+                    <span style={{ float: 'right' }}>  {this.state.currentParty.status}</span>
                 </div>
 
-                <div className='action-container' >
-                    {this.state.currentParty.status == "Processing"
-                        || this.state.currentParty.status == "Pending"
-                        || this.state.currentParty.status == "Accepted" ?
-                        <div> <button className='btn btn-action'
-                            onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel
-                              </button>
-                        </div> : null}
-                    {this.state.currentParty.status == "Cancelled"
-                        || this.state.currentParty.status == "finished"
-                        ? <div> <button className='btn btn-action'
-                            onClick={this.changeStatus.bind(this, 'Closed')}>Close
-                                </button>
-                            <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
-                                <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
-                                <StarRatingComponent
-                                    name='rating'
-                                    starCount={5}
-                                    value={this.state.rating}
-                                    onStarClick={this.onStarClick.bind(this)}
-                                />
 
-                                <input ref={el =>
-                                    this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
-                                <button className='btn btn-action'
-                                    onClick={this.sendRatingFeedback}>Send feedback
-                                </button>
-                            </Col>
-                          </div> : null}
-                </div>
-
-                <p className='header-title'>Party Details</p>
                 <p className='header-subtitle'>Edit Details</p>
                 <div className='details-content'>
                     <Row>
@@ -977,8 +943,42 @@ class MyPartyHost extends Component {
                 </div>
 
                 <div className='next-blk'>
+
+
+                    {this.state.currentParty.status == "Processing"
+                        || this.state.currentParty.status == "Pending"
+                        || this.state.currentParty.status == "Accepted" ?
+                        <button className='btn btn-action' style={{ margin: '0 20px 0 0px' }}
+                            onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel Party
+                        </button>
+                        : null}
+                    {this.state.currentParty.status == "Cancelled"
+                        || this.state.currentParty.status == "finished"
+                        ? <button className='btn btn-action' style={{ margin: '0 20px 0 20px' }}
+                            onClick={this.changeStatus.bind(this, 'Closed')}>Close
+                          </button>
+
+                        : null}
+
                     <Button onClick={this.submitRequest} >Save</Button>
-                    <Button onClick={this.cancelRequest} style={{ margin: '0 0 0 20px' }}>Cancel</Button>
+                    <Button onClick={this.closeView} style={{ margin: '0 0 0 20px' }}>Back</Button>
+                    {this.state.currentParty.status == "Cancelled"
+                        || this.state.currentParty.status == "finished" ?
+                        <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
+                            <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
+                            <StarRatingComponent
+                                name='rating'
+                                starCount={5}
+                                value={this.state.rating}
+                                onStarClick={this.onStarClick.bind(this)}
+                            />
+
+                            <input ref={el =>
+                                this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
+                            <button className='btn btn-action'
+                                onClick={this.sendRatingFeedback}>Send feedback
+                            </button>
+                        </Col> : null}
                 </div>
             </div>
                 </Container>);

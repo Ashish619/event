@@ -194,9 +194,14 @@ p {
 
 .btn {
     &.btn-action {
-        background-color: #007bff !important;
+        background-color: #b30274;
         color: #fff !important;
     }
+}
+
+.btn:focus,
+.btn.focus {
+    box-shadow: none !important;
 }
 
 .datepicker {

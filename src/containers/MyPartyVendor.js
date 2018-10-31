@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withRouter } from "react-router";
 import * as actions from "actions/events";
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Button } from 'reactstrap';
 import Alerts from "components/Alerts";
 import moment from 'moment';
 import StarRatingComponent from 'react-star-rating-component';
@@ -477,62 +477,13 @@ class MyPartyVendor extends Component {
 
                 <p className='header-title'>Party Details</p>
                 <div className='action-container' >
-                    <button className='btn btn-action'
-                        style={{ float: 'left' }} onClick={this.closeView}>Back
-                    </button>
-                    <span style={{ float: 'right' }}> Status : {this.state.currentParty.status}</span>
+
+                    <span style={{ float: 'right' }}> {this.state.currentParty.status}</span>
 
                 </div>
 
 
-                <div className='action-container' >
 
-                    {this.state.currentParty.status == "Processing"
-                        || this.state.currentParty.status == "Pending"
-                        ?
-                        <div> <button className='btn btn-action'
-                            onClick={this.changeStatus.bind(this, 'Accepted')}>Accept
-                              </button>
-                            <button className='btn btn-action'
-                                onClick={this.changeStatus.bind(this, 'Rejected')}>Rejected
-                            </button>
-                        </div> : null}
-
-                    {this.state.currentParty.status == "Accepted"
-                        ? <div>
-                            {
-                                //</div> <button className='btn btn-action'
-                                //     onClick={this.changeStatus.bind(this, 'Cancelled')}>Cancel
-                                //       </button>
-                            }
-                            <button className='btn btn-action'
-                                onClick={this.changeStatus.bind(this, 'Started')}>Start
-                            </button>
-                          </div> : null}
-
-                    {this.state.currentParty.status == "Started"
-                        ?
-                        <div> <button className='btn btn-action'
-                            onClick={this.changeStatus.bind(this, 'Finished')}>finish
-                              </button>
-                        </div> : null}
-
-                    {this.state.currentParty.status == "Cancelled"
-                        || this.state.currentParty.status == "Finished"
-                        ? <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
-                            <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
-                            <StarRatingComponent
-                                name='rating'
-                                starCount={5}
-                                value={this.state.rating}
-                                onStarClick={this.onStarClick.bind(this)}
-                            />
-
-                            <input ref={el =>
-                                this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
-                            <button onClick={this.sendRatingFeedback} className='btn btn-action'>Send feedback</button>
-                          </Col> : null}
-                </div>
                 <p className='header-subtitle'>General Details</p>
 
                 <Row className='info-host'>
@@ -607,6 +558,64 @@ class MyPartyVendor extends Component {
                     <Row >
                         {mealsViewCard}
                     </Row>
+                </div>
+                <div className='next-blk'>
+
+
+                    {this.state.currentParty.status == "Processing"
+                        || this.state.currentParty.status == "Pending"
+                        ?
+                        <button className='btn btn-action' style={{ margin: '0 20px 0 0px' }}
+                            onClick={this.changeStatus.bind(this, 'Accepted')}>Accept
+                        </button>
+
+                        : null}
+
+                    {this.state.currentParty.status == "Processing"
+                        || this.state.currentParty.status == "Pending"
+                        ?
+
+                        <button className='btn btn-action' style={{ margin: '0 20px 0 0px' }}
+                            onClick={this.changeStatus.bind(this, 'Rejected')}>Reject
+                        </button>
+                        : null}
+
+                    {this.state.currentParty.status == "Accepted"
+                        ?
+
+                        <button className='btn btn-action' style={{ margin: '0 20px 0 0px' }}
+                            onClick={this.changeStatus.bind(this, 'Started')}>Start
+                        </button>
+                        : null}
+
+                    {this.state.currentParty.status == "Started"
+                        ?
+                        <button className='btn btn-action' style={{ margin: '0 20px 0 0px' }}
+                            onClick={this.changeStatus.bind(this, 'Finished')}>finish
+                        </button>
+                        : null}
+
+
+
+
+
+                    <Button onClick={this.closeView} style={{ margin: '0 0 0 20px' }}>Back</Button>
+
+                    {this.state.currentParty.status == "Cancelled"
+                        || this.state.currentParty.status == "Finished"
+                        ? <Col className='feedback-section' xs={{ size: 12 }} md={{ size: 6 }}>
+                            <span style={{ float: 'left' }}>Rating : {this.state.rating}</span>
+                            <StarRatingComponent
+                                name='rating'
+                                starCount={5}
+                                value={this.state.rating}
+                                onStarClick={this.onStarClick.bind(this)}
+                            />
+
+                            <input ref={el =>
+                                this.userinfo.feedback = el} className='input-text' placeholder='feedback' />
+                            <button onClick={this.sendRatingFeedback} className='btn btn-action'>Send feedback</button>
+                          </Col> : null}
                 </div>
 
                     </Container>);

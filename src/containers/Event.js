@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-
+import Carousel from 'nuka-carousel';
 import {
   Container, Row, Col, Collapse,
   Navbar,
@@ -83,32 +83,21 @@ class Event extends Component {
           <Col sm={{ size: 12 }} >
             <p className='des-title'>Loreum Ipsum</p>
             <p className='des-matter'>Loreum IpsumLoreum IpsumLoreum IpsumLoreum IpsumLoreum IpsumLoreum Ipsum</p>
-            <p className='des-title'>Loreum Ipsum</p>
-            <p className='des-matter'>Loreum IpsumLoreum IpsumLoreum IpsumLoreum IpsumLoreum IpsumLoreum Ipsum</p>
           </Col>
         </Row>
         <div className='gallery-container'>
-          <Row className='gallery'>
-            <Col md={{ size: 4 }} >
-              <div><a>Loreum Ipsum</a></div>
+          <Row style={{ margin: 0 }}>
+            <Col style={{ padding: 0 }} md={{ size: 12 }} >
+              <Carousel autoplay={true} wrapAround={true}>
+                <img src={'assets/images/c_img1.png'} height='500' />
+                <img src={'assets/images/c_img2.png'} height='500' />
+                <img src={'assets/images/c_img3.png'} height='500' />
+                <img src={'assets/images/c_img4.png'} height='500' />
+                <img src={'assets/images/c_img5.png'} height='500' />
+
+              </Carousel>
             </Col>
-            <Col md={{ size: 4 }} >
-              <div> <a>Loreum Ipsum</a></div>
-            </Col>
-            <Col md={{ size: 4 }} >
-              <div> <a >Loreum Ipsum</a></div>
-            </Col>
-          </Row>
-          <Row className='gallery'>
-            <Col md={{ size: 4 }} >
-              <div> <a >Loreum Ipsum</a></div>
-            </Col>
-            <Col md={{ size: 4 }} >
-              <div> <a >Loreum Ipsum</a></div>
-            </Col>
-            <Col md={{ size: 4 }} >
-              <div><a >Loreum Ipsum</a></div>
-            </Col>
+
           </Row>
         </div>
         <Row className='footer-links'>
