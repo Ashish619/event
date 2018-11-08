@@ -15,7 +15,7 @@ import {
   NavLink,
   Button
 } from 'reactstrap';
-
+import Slider from "react-slick";
 
 class Event extends Component {
   constructor(props) {
@@ -32,6 +32,17 @@ class Event extends Component {
   }
 
   render() {
+    var settings = {
+      centerMode: true,
+      draggable: false,
+      adaptiveHeight: true,
+      autoplay: true,
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 3,
+      slidesToScroll: 3
+    };
     return (
       <Container fluid={true} className='landing'>
         <Navbar expand='md'>
@@ -86,19 +97,35 @@ class Event extends Component {
           </Col>
         </Row>
         <div className='gallery-container'>
-          <Row style={{ margin: 0 }}>
-            <Col style={{ padding: 0 }} md={{ size: 12 }} >
-              <Carousel autoplay={true} wrapAround={true}>
-                <img src={'assets/images/c_img1.png'} height='500' />
-                <img src={'assets/images/c_img2.png'} height='500' />
-                <img src={'assets/images/c_img3.png'} height='500' />
-                <img src={'assets/images/c_img4.png'} height='500' />
-                <img src={'assets/images/c_img5.png'} height='500' />
 
-              </Carousel>
-            </Col>
 
-          </Row>
+          <Slider {...settings}>
+            <div>
+              <img src={'assets/images/c_img1.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img2.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img3.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img4.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img5.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img6.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img7.png'} width='400' />
+            </div>
+            <div>
+              <img src={'assets/images/c_img8.png'} width='400' />
+            </div>
+          </Slider>
+
         </div>
         <Row className='footer-links'>
           <Col sm={{ size: 12 }} className='social-icons' >

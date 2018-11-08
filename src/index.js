@@ -29,6 +29,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "assets/styles/index.scss";
 
 
+
+
 const history = createHistory();
 
 const app = document.getElementById("event");

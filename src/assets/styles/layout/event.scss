@@ -632,3 +632,24 @@ p {
         }
     }
 }
+
+.slick-slider {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.slick-next {
+    right: 10px;
+    z-index: 999;
+}
+
+.slick-prev {
+    left: 10px;
+    z-index: 999;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    color: #000;
+}
